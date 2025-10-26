@@ -441,6 +441,8 @@ bool ACS_CF_UniqueTID(ACS_CF_ARGS);
 bool ACS_CF_PolyWait(ACS_CF_ARGS);
 bool ACS_CF_TagWait(ACS_CF_ARGS);
 bool ACS_CF_GetArmorInfo(ACS_CF_ARGS);
+bool ACS_CF_GetSectorColormap(ACS_CF_ARGS);
+bool ACS_CF_SetSectorColormap(ACS_CF_ARGS);
 
 // extern vars.
 
