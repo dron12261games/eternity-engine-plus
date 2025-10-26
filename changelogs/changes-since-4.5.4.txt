@@ -50,6 +50,13 @@ Features
   - int CheckInventory(str item_name):
     Now, it can be used to check all types of items, as well as health, armor, weapons, backpacks, and all types of
     power effects with the player. 
+* Added new cheat codes for automap:
+  - IDDKT and RAVKMAP (for Doom and Heretic respectively) centers automap on alive thing with the COUNTKILL flag. 
+    If reused, it moves to next alive thing.
+  - IDDIT and RAVIMAP (for Doom and Heretic respectively) centers automap on item with the COUNTITEM flag. 
+    If reused, it moves to next item.
+  - IDDST and RAVSMAP (for Doom and Heretic respectively) centers automap on sector marked as secret. 
+    If reused, it moves to next secret sector.
 
 Improvements
 ------------
