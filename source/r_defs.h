@@ -516,6 +516,7 @@ struct line_t
     // haleyjd 02/26/05: ExtraData fields
     unsigned int extflags;          // activation flags for param specials
     int          args[NUMLINEARGS]; // argument values for param specials
+    qstring      arg0str;           // string argument value for param specials
     float        alpha;             // alpha
 
     // ioanch 20160312

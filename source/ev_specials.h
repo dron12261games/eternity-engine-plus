@@ -68,6 +68,7 @@ struct ev_instance_t
     sectoraction_t *sectoraction; // sectoraction, if any
     int             special;      // special to activate (may == line->special)
     const int      *args;         // arguments (may point to line->args)
+    const char     *arg0str;      // string argument
     int             tag;          // tag (may == line->args[0])
     int             side;         // side of activation
     union

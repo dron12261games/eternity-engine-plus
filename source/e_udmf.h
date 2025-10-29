@@ -259,6 +259,7 @@ private:
             missilecross, repeatspecial, polycross;
 
         int special, arg[5];     // linedef special and args
+        qstring arg0str;         // linedef string special
         int sidefront, sideback; // sidedef references
 
         // auxiliary fields
@@ -426,6 +427,7 @@ private:
         bool    dormant, class1, class2, class3;
         bool    standing, strifeally, translucent, invisible;
         int     special, arg[5];
+        qstring arg0str;
 
         // new stuff
         double health;

@@ -2890,19 +2890,23 @@ DEFINE_ACTION(EV_ActionPillarOpen)
 //
 DEFINE_ACTION(EV_ActionACSExecute)
 {
-    Mobj      *thing = instance->actor;
-    line_t    *line  = instance->line;
-    int        side  = instance->side;
-    polyobj_t *po    = instance->poly;
-    int        num   = instance->args[0];
-    int        map   = instance->args[1];
-    int        argc  = NUMLINEARGS - 2;
-    uint32_t   argv[NUMLINEARGS - 2];
+    Mobj       *thing = instance->actor;
+    line_t     *line  = instance->line;
+    int         side  = instance->side;
+    polyobj_t  *po    = instance->poly;
+    const char *name  = instance->arg0str;
+    int         num   = instance->args[0];
+    int         map   = instance->args[1];
+    int         argc  = NUMLINEARGS - 2;
+    uint32_t    argv[NUMLINEARGS - 2];
 
     for(int i = 0; i != argc; ++i)
         argv[i] = instance->args[i + 2];
 
-    return ACS_ExecuteScriptI(num, map, argv, argc, thing, line, side, po);
+    if(name)
+        return ACS_ExecuteScriptS(name, map, argv, argc, thing, line, side, po);
+    else
+        return ACS_ExecuteScriptI(num, map, argv, argc, thing, line, side, po);
 }
 
 //
@@ -2914,7 +2918,10 @@ DEFINE_ACTION(EV_ActionACSExecute)
 //
 DEFINE_ACTION(EV_ActionACSSuspend)
 {
-    return ACS_SuspendScriptI(instance->args[0], instance->args[1]);
+    if(instance->arg0str)
+        return ACS_SuspendScriptS(instance->arg0str, instance->args[1]);
+    else
+        return ACS_SuspendScriptI(instance->args[0], instance->args[1]);
 }
 
 //
@@ -2926,7 +2933,10 @@ DEFINE_ACTION(EV_ActionACSSuspend)
 //
 DEFINE_ACTION(EV_ActionACSTerminate)
 {
-    return ACS_TerminateScriptI(instance->args[0], instance->args[1]);
+    if(instance->arg0str)
+        return ACS_TerminateScriptS(instance->arg0str, instance->args[1]);
+    else
+        return ACS_TerminateScriptI(instance->args[0], instance->args[1]);
 }
 
 //
@@ -2938,18 +2948,22 @@ DEFINE_ACTION(EV_ActionACSTerminate)
 //
 DEFINE_ACTION(EV_ActionACSExecuteWithResult)
 {
-    Mobj      *thing = instance->actor;
-    line_t    *line  = instance->line;
-    int        side  = instance->side;
-    polyobj_t *po    = instance->poly;
-    int        num   = instance->args[0];
-    int        argc  = NUMLINEARGS - 1;
-    uint32_t   argv[NUMLINEARGS - 1];
+    Mobj       *thing = instance->actor;
+    line_t     *line  = instance->line;
+    int         side  = instance->side;
+    polyobj_t  *po    = instance->poly;
+    const char *name  = instance->arg0str;
+    int         num   = instance->args[0];
+    int         argc  = NUMLINEARGS - 1;
+    uint32_t    argv[NUMLINEARGS - 1];
 
     for(int i = 0; i != argc; ++i)
         argv[i] = instance->args[i + 1];
 
-    return ACS_ExecuteScriptIResult(num, argv, argc, thing, line, side, po);
+    if(name)
+        return ACS_ExecuteScriptSResult(name, argv, argc, thing, line, side, po);
+    else
+        return ACS_ExecuteScriptIResult(num, argv, argc, thing, line, side, po);
 }
 
 //
@@ -3412,21 +3426,27 @@ DEFINE_ACTION(EV_ActionParamDoorLockedRaise)
 //
 DEFINE_ACTION(EV_ActionACSLockedExecute)
 {
-    Mobj      *thing = instance->actor;
-    line_t    *line  = instance->line;
-    int        side  = instance->side;
-    polyobj_t *po    = instance->poly;
-    int        num   = instance->args[0];
-    int        map   = instance->args[1];
-    int        argc  = NUMLINEARGS - 3;
-    uint32_t   argv[NUMLINEARGS - 3];
+    Mobj       *thing = instance->actor;
+    line_t     *line  = instance->line;
+    int         side  = instance->side;
+    polyobj_t  *po    = instance->poly;
+    const char *name  = instance->arg0str;
+    int         num   = instance->args[0];
+    int         map   = instance->args[1];
+    int         argc  = NUMLINEARGS - 3;
+    uint32_t    argv[NUMLINEARGS - 3];
 
     for(int i = 0; i != argc; ++i)
         argv[i] = instance->args[i + 2];
 
     // Always display the "object" message.
     if(EV_lockCheck(thing, instance->args[4], true))
-        return ACS_ExecuteScriptI(num, map, argv, argc, thing, line, side, po);
+    {
+        if(name)
+            return ACS_ExecuteScriptS(name, map, argv, argc, thing, line, side, po);
+        else
+            return ACS_ExecuteScriptI(num, map, argv, argc, thing, line, side, po);
+    }
     return 0;
 }
 
@@ -3439,21 +3459,27 @@ DEFINE_ACTION(EV_ActionACSLockedExecute)
 //
 DEFINE_ACTION(EV_ActionACSLockedExecuteDoor)
 {
-    Mobj      *thing = instance->actor;
-    line_t    *line  = instance->line;
-    int        side  = instance->side;
-    polyobj_t *po    = instance->poly;
-    int        num   = instance->args[0];
-    int        map   = instance->args[1];
-    int        argc  = NUMLINEARGS - 3;
-    uint32_t   argv[NUMLINEARGS - 3];
+    Mobj       *thing = instance->actor;
+    line_t     *line  = instance->line;
+    int         side  = instance->side;
+    polyobj_t  *po    = instance->poly;
+    const char *name  = instance->arg0str;
+    int         num   = instance->args[0];
+    int         map   = instance->args[1];
+    int         argc  = NUMLINEARGS - 3;
+    uint32_t    argv[NUMLINEARGS - 3];
 
     for(int i = 0; i != argc; ++i)
         argv[i] = instance->args[i + 2];
 
     // Always display the "door" message.
     if(EV_lockCheck(thing, instance->args[4], false))
-        return ACS_ExecuteScriptI(num, map, argv, argc, thing, line, side, po);
+    {
+        if(name)
+            return ACS_ExecuteScriptS(name, map, argv, argc, thing, line, side, po);
+        else
+            return ACS_ExecuteScriptI(num, map, argv, argc, thing, line, side, po);
+    }
     return 0;
 }
 

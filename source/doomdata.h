@@ -308,8 +308,9 @@ struct mapthing_t
     fixed_t  healthModifier; // Overriding health, based on UDMF thing health.
                              // 0 to ignore
 
-    int special;         // scripting special
-    int args[NUMMTARGS]; // arguments for special
+    int     special;         // scripting special
+    int     args[NUMMTARGS]; // arguments for special
+    qstring arg0str;         // string argument for special
 
     int recordnum; // for ExtraData hashing
     int next;

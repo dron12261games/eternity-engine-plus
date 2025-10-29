@@ -388,6 +388,7 @@ bool UDMFParser::loadLinedefs(UDMFSetupSettings &setupSettings)
 
         ld->special = uld.special;
         ld->tag     = uld.identifier;
+        ld->arg0str = uld.arg0str;
         ld->args[0] = uld.arg[0];
         ld->args[1] = uld.arg[1];
         ld->args[2] = uld.arg[2];
@@ -556,6 +557,7 @@ bool UDMFParser::loadThings()
         if(mNamespace == namespace_Hexen || mNamespace == namespace_Eternity)
         {
             ft->special = ut.special;
+            ft->arg0str = ut.arg0str;
             ft->args[0] = ut.arg[0];
             ft->args[1] = ut.arg[1];
             ft->args[2] = ut.arg[2];
@@ -712,6 +714,7 @@ void UDMFParser::readLinedefToken(ULinedef *linedef, const keytoken_t *kt) const
         READ_BOOL(linedef,   blockfloaters);
 
         READ_NUMBER(linedef, special);
+        //READ_STRING(linedef, arg0str);
         case t_arg0: readNumber(linedef->arg[0]); break;
         case t_arg1: readNumber(linedef->arg[1]); break;
         case t_arg2: readNumber(linedef->arg[2]); break;
