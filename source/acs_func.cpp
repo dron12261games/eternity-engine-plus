@@ -66,6 +66,7 @@
 #include "v_misc.h"
 #include "doomstat.h"
 #include "metaapi.h"
+#include "e_lib.h"
 
 #include "ACSVM/Scope.hpp"
 #include "ACSVM/Thread.hpp"
@@ -868,17 +869,26 @@ bool ACS_CF_GetCVarString(ACS_CF_ARGS)
     return false;
 }
 
+static ScriptedItem getScriptedItem(const char *itemname)
+{
+    itemeffect_t *item = E_ItemEffectForName(itemname);
+    if(item)
+        return item;
+    return E_StrToNumLinear(powerStrings, NUMPOWERS, itemname);
+}
+
 //
 // int CheckInventory(str itemname);
 //
 bool ACS_CF_CheckInventory(ACS_CF_ARGS)
 {
-    auto          info     = &static_cast<ACSThread *>(thread)->info;
-    char const   *itemname = thread->scopeMap->getString(argV[0])->str;
-    itemeffect_t *item     = E_ItemEffectForName(itemname);
+    auto        info     = &static_cast<ACSThread *>(thread)->info;
+    char const *itemname = thread->scopeMap->getString(argV[0])->str;
 
-    // We could use E_GetItemOwnedAmountName but let's inform the player if stuff's broke
-    if(!item)
+    ScriptedItem item = getScriptedItem(itemname);
+
+    // If the item doesn't exist as an item or a power, complain
+    if(!P_IsValid(item))
     {
         doom_printf("ACS_CF_CheckInventory: Inventory item '%s' not found\a\n", itemname);
         thread->dataStk.push(0);
@@ -888,7 +898,8 @@ bool ACS_CF_CheckInventory(ACS_CF_ARGS)
     if(!info->mo || !info->mo->player)
         thread->dataStk.push(0);
     else
-        thread->dataStk.push(E_GetItemOwnedAmount(*info->mo->player, item));
+        thread->dataStk.push(P_CheckInventory(info->mo->player, item));
+
     return false;
 }
 
@@ -2237,7 +2248,11 @@ void ACS_SetThingProp(Mobj *thing, uint32_t var, uint32_t val)
     // clang-format off
     switch(var)
     {
-    case ACS_TP_Health:       thing->health = val; break;
+    case ACS_TP_Health:
+        thing->health = val;
+        if (thing->player)
+            thing->player->health = val;
+        break;
     case ACS_TP_Speed:        break;
     case ACS_TP_Damage:       thing->damage = val; break;
     case ACS_TP_Alpha:        thing->translucency = val; break;
@@ -2681,44 +2696,36 @@ bool ACS_CF_StopSound(ACS_CF_ARGS)
 //
 bool ACS_CF_GiveInventory(ACS_CF_ARGS)
 {
-    const auto          info     = &static_cast<ACSThread *>(thread)->info;
-    char const         *itemname = thread->scopeMap->getString(argV[0])->str;
-    const int           amount   = argV[1];
-    itemeffect_t *const item     = E_ItemEffectForName(itemname);
+    const auto  info     = &static_cast<ACSThread *>(thread)->info;
+    char const *itemname = thread->scopeMap->getString(argV[0])->str;
+    const int   amount   = argV[1];
 
-    if(!item)
+    ScriptedItem item = getScriptedItem(itemname);
+
+    // If the item doesn't exist as an item or a power, complain
+    if(!P_IsValid(item))
     {
         doom_printf("ACS_CF_GiveInventory: Inventory item '%s' not found\a\n", itemname);
         return false;
     }
 
-    // Handle negative amounts: treat as 0 (don't give anything)
-    if(amount <= 0)
+    // if amount is 0, do nothing
+    // if amount is negative, it means give maximum
+    if(amount == 0)
         return false;
-
-    auto giveToPlayer = [item, amount](player_t *player) {
-        switch(item->getInt("class", ITEMFX_NONE))
-        {
-        case ITEMFX_HEALTH: P_GiveBody(*player, item, amount); break;
-        case ITEMFX_ARMOR:  P_GiveArmor(*player, item, amount); break;
-        case ITEMFX_AMMO:   P_GiveAmmoPickup(*player, item, false, 0, amount); break;
-        case ITEMFX_POWER:  P_GivePowerForItem(*player, item, amount); break;
-        default:            E_GiveInventoryItem(*player, item, amount); break;
-        }
-    };
 
     if(info->mo)
     {
         // FIXME: Needs to be adapted for when Mobjs get inventory if they get inventory
         if(info->mo->player)
-            giveToPlayer(info->mo->player);
+            P_GiveInventory(info->mo->player, item, amount);
     }
     else
     {
         for(int pnum = 0; pnum != MAXPLAYERS; ++pnum)
         {
             if(playeringame[pnum])
-                giveToPlayer(&players[pnum]);
+                P_GiveInventory(&players[pnum], item, amount);
         }
     }
     return false;
