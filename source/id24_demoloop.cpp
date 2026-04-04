@@ -1,4 +1,4 @@
-//
+﻿//
 // The Eternity Engine
 // Copyright (C) 2025 James Haley et al.
 //
@@ -148,20 +148,16 @@ static void warningFunc(bool error, const char *msg)
 
 void LoadDemoLoop()
 {
-    int num = wGlobalDir.checkNumForName("DEMOLOOP");
-    if(num < 0)
-        return;
-
-    ZAutoBuffer buf;
-    wGlobalDir.cacheLumpAuto("DEMOLOOP", buf);
-    if(!buf.get())
-        return;
-
     usermsg("Loading DEMOLOOP...");
     PODCollection<demostate_t> states;
 
-    jsonLumpResult_e result =
-        ParseJSONLump(buf.get(), buf.getSize(), "demoloop", { 1, 0, 0 }, parseFunc, &states, warningFunc);
+    // Parse the DEMOLOOP lump, if it exists, and load the demo states from it. 
+    // If any errors are encountered during parsing, the lump will be rejected and 
+    // the default demo states will be used.
+    jsonLumpResult_e result = ParseJSONLumpByName("DEMOLOOP", "demoloop", { 1, 0, 0 }, parseFunc, &states, warningFunc);
+
+    if(result == JLR_NO_LUMP)
+        return;
 
     if(result == JLR_OK)
     {
@@ -180,6 +176,7 @@ void LoadDemoLoop()
         usermsg("Rejected DEMOLOOP lump.");
     }
 }
+
 } // namespace id24
 
 // EOF

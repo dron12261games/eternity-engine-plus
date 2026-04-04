@@ -1,4 +1,4 @@
-//
+﻿//
 // The Eternity Engine
 // Copyright (C) 2025 James Haley et al.
 //
@@ -52,9 +52,16 @@ typedef void (*jsonWarning_t)(bool error, const char *msg);
 
 typedef jsonLumpResult_e (*jsonLumpFunc_t)(const nlohmann::json &data, void *context, jsonWarning_t warningFunc);
 
+// Parses a JSON lump with the expected structure, validates its version, 
+// and if valid, calls the provided lumpFunc to process it
 jsonLumpResult_e ParseJSONLump(const void *rawdata, size_t rawsize, const char *lumptype,
                                const JSONLumpVersion &maxversion, jsonLumpFunc_t lumpFunc, void *context,
                                jsonWarning_t warningFunc);
+
+// Parses a JSON lump by name from the WAD, with the expected structure 
+// and version, and if valid, calls the provided lumpFunc to process it
+jsonLumpResult_e ParseJSONLumpByName(const char *lumpname, const char *lumptype, const JSONLumpVersion &maxversion,
+                                     jsonLumpFunc_t lumpFunc, void *context, jsonWarning_t warningFunc);
 
 bool CoerceInt(const nlohmann::json &object, const char *fieldName, int &out, jsonWarning_t warningFunc);
 

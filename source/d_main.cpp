@@ -66,6 +66,8 @@
 #include "i_system.h"
 #include "i_video.h"
 #include "id24_demoloop.h"
+#include "id24_misc.h"
+#include "id24_gameconf.h"
 #include "in_lude.h"
 #include "m_argv.h"
 #include "m_compare.h"
@@ -1637,6 +1639,15 @@ static void D_DoomInit()
     // haleyjd 11/12/09: Initialize post-W_InitMultipleFiles GameModeInfo
     // overrides and adjustments here.
     D_InitGMIPostWads();
+
+    // ID24 GAMECONF loading
+    id24::ID24_LoadGameconfEarly();
+
+    // ID24 complvl autodetect
+    id24::ID24_DetectAndEnable();
+
+    // If ID24 complvl is enabled, try to load id24res.wad
+    id24::ID24_TryLoadId24Res();
 
     // haleyjd 10/20/03: use D_ProcessDehInWads again
     D_ProcessDehInWads();

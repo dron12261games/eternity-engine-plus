@@ -1,0 +1,166 @@
+Patch File for DeHackEd v3.0
+# Created with WhackEd4 1.0.2
+# Note: Use the pound sign ('#') to start comment lines.
+
+Doom version = 21
+Patch format = 6
+
+Thing 15 (Cacodemon)
+Translation = CACOYLLW
+
+Thing 151 (Tint line demo)
+#$Editor category = Demo/RNR24
+#$Editor sprite = TNT1A0
+ID # = 9001
+Initial frame = 967
+Height = 6553600
+Width = 3145728
+Mass = 1000
+Bits = SPECIAL
+Pickup item type = 0
+Pickup bonus count = 0
+Pickup message = USER_TINTLINEDEMO
+Pickup sound = 87
+
+Thing 152 (Hexen sky demo)
+#$Editor category = Demo/RNR24
+#$Editor sprite = TNT1A0
+ID # = 9002
+Initial frame = 967
+Height = 6553600
+Width = 3145728
+Mass = 1000
+Bits = SPECIAL
+Pickup item type = 0
+Pickup bonus count = 0
+Pickup message = USER_HEXENSKY
+Pickup sound = 87
+
+Thing 153 (Music line demo)
+#$Editor category = Demo/RNR24
+#$Editor sprite = TNT1A0
+ID # = 9003
+Initial frame = 967
+Height = 6553600
+Width = 3145728
+Mass = 1000
+Bits = SPECIAL
+Pickup item type = 0
+Pickup bonus count = 0
+Pickup message = USER_MUSICLINEDEMO
+Pickup sound = 87
+
+Thing 154 (Monsters use lines demo)
+#$Editor category = Demo/Boom
+#$Editor sprite = TNT1A0
+ID # = 9004
+Initial frame = 967
+Height = 6553600
+Width = 4194304
+Mass = 1000
+Bits = SPECIAL
+Pickup item type = 0
+Pickup bonus count = 0
+Pickup message = USER_MONSTERSUSELINE
+Pickup sound = 87
+
+Thing 155 (Tranmaps demo)
+#$Editor category = Demo/Boom
+#$Editor sprite = TNT1A0
+ID # = 9005
+Initial frame = 967
+Height = 6553600
+Width = 6291456
+Mass = 1000
+Bits = SPECIAL
+Pickup item type = 0
+Pickup bonus count = 0
+Pickup message = USER_TRANMAPSDEMO
+Pickup sound = 87
+
+Thing 156 (Silent line teleport demo)
+#$Editor category = Demo/Boom
+#$Editor sprite = TNT1A0
+ID # = 9006
+Initial frame = 967
+Height = 6553600
+Width = 4194304
+Mass = 1000
+Bits = SPECIAL
+Pickup item type = 0
+Pickup bonus count = 0
+Pickup message = USER_SILENTTELEDEMO
+Pickup sound = 87
+
+Thing 157 (Transfer properties glitch demo)
+#$Editor category = Demo/Boom
+#$Editor sprite = TNT1A0
+ID # = 9007
+Initial frame = 967
+Height = 6553600
+Width = 4194304
+Mass = 1000
+Bits = SPECIAL
+Pickup item type = 0
+Pickup bonus count = 0
+Pickup message = USER_PROPERTIESGLITCHDEMO
+Pickup sound = 87
+
+Thing 158 (Sector coloured lighting demo)
+#$Editor category = Demo/RNR24
+#$Editor sprite = TNT1A0
+ID # = 9008
+Initial frame = 967
+Height = 6553600
+Width = 4194304
+Mass = 1000
+Bits = SPECIAL
+Pickup item type = 0
+Pickup bonus count = 0
+Pickup message = USER_COLORMAPDEMO
+Pickup sound = 87
+
+Thing 159 (New decorations demo)
+#$Editor category = Demo/RNR24
+#$Editor sprite = TNT1A0
+ID # = 9009
+Initial frame = 967
+Height = 6553600
+Width = 4194304
+Mass = 1000
+Bits = SPECIAL
+Pickup item type = 0
+Pickup bonus count = 0
+Pickup message = USER_DECORATIONSDEMO
+Pickup sound = 87
+
+Thing 160 (New enemies demo)
+#$Editor category = Demo/RNR24
+#$Editor sprite = TNT1A0
+ID # = 9010
+Initial frame = 967
+Height = 6553600
+Width = 3145728
+Mass = 1000
+Bits = SPECIAL
+Pickup item type = 0
+Pickup bonus count = 0
+Pickup message = USER_NEWENEMIESSDEMO
+Pickup sound = 87
+
+[STRINGS]
+USER_OKAYCACO = Are you okay there buddy?
+USER_TINTLINEDEMO = RNR24: Colormap linedefs (walk + switch)
+USER_HEXENSKY = RNR24: Hexen sky + sky flat via skydefs
+USER_MUSICLINEDEMO = RNR24: Music changes via linedef (walk)
+USER_MONSTERSUSELINE = Boom: Monsters use any line they touch
+USER_TRANMAPSDEMO = Boom: Tranmaps of all sorts
+USER_SILENTTELEDEMO = Boom: Silent line teleporter
+USER_PROPERTIESGLITCHDEMO = Boom: Transfer properties is global, HOM here
+USER_COLORMAPDEMO = RNR24: Coloured lighting with colormaps
+USER_DECORATIONSDEMO = RNR24: New decorations
+USER_NEWENEMIESSDEMO = RNR24: New enemies
+DEHTHING_Vassago = -1879048187
+DEHTHING_Tyrant = -1879048186
+DEHTHING_TyrantBoss1 = -1879048185
+DEHTHING_TyrantBoss2 = -1879048184

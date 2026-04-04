@@ -1,0 +1,27 @@
+{
+  "type": "gameconf",
+  "version": "1.0.0",
+  "metadata": { },
+  "data":
+  {
+    "title": "Boom Test",
+    "author": "Ethan Watson",
+    "description": "A test suite for Boom compatibility, designed to complement BOOMEDIT.WAD",
+    "version": "1.0",
+    "iwad": "doom.wad",
+    "pwadfiles": null,
+    "dehfiles": null,
+	"playertranslations":
+	[
+	  "T_YELLOW",
+	  "T_GREEN",
+	  "T_INDIGO",
+	  "T_BROWN",
+	  "T_RED"
+	],
+	"wadtranslation": null,
+    "executable": null,
+	"mode": "retail",
+    "options": null
+  }
+}

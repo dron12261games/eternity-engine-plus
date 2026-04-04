@@ -1,4 +1,4 @@
-//
+﻿//
 // The Eternity Engine
 // Copyright (C) 2025 James Haley et al.
 //
@@ -28,6 +28,8 @@
 #include "id24_json.h"
 
 #include "m_qstr.h"
+#include "w_wad.h"
+#include "z_auto.h"
 
 #include "nlohmann/json.hpp"
 
@@ -167,6 +169,29 @@ jsonLumpResult_e ParseJSONLump(const void *rawdata, size_t rawsize, const char *
     }
 
     return lumpFunc(root["data"], context, warningFunc);
+}
+
+// Parse a JSON lump by name from the WAD, with the expected structure and version, 
+// and if valid, calls the provided lumpFunc to process it
+jsonLumpResult_e ParseJSONLumpByName(const char *lumpname, const char *lumptype, const JSONLumpVersion &maxversion,
+                                     jsonLumpFunc_t lumpFunc, void *context, jsonWarning_t warningFunc)
+{
+    // Validate lump name before trying to load it, to avoid caching and parsing invalid lumps
+    if(!lumpname || !*lumpname)
+        return JLR_NO_LUMP;
+
+    // Lump names must be 1-8 characters of A-Z, 0-9, _ or -
+    if(wGlobalDir.checkNumForName(lumpname) < 0)
+        return JLR_NO_LUMP;
+
+    // Load the lump data into a buffer
+    ZAutoBuffer buf;
+    wGlobalDir.cacheLumpAuto(lumpname, buf);
+    if(!buf.get() || !buf.getSize())
+        return JLR_INVALID;
+
+    // Parse the lump as JSON and process it with the provided function
+    return ParseJSONLump(buf.get(), buf.getSize(), lumptype, maxversion, lumpFunc, context, warningFunc);
 }
 
 } // namespace id24

@@ -1,4 +1,4 @@
-//
+﻿//
 // The Eternity Engine
 // Copyright (C) 2025 James Haley et al.
 //
@@ -49,6 +49,9 @@ extern const char *mapnamest[];
 extern const char *mapnamesh[];
 
 extern bool deh_pars;
+
+// Checks raw DEHACKED text for "Doom version = <version>" in header area.
+bool D_DEHHasDoomVersion(const void *rawdata, size_t rawsize, int version);
 
 #endif
 

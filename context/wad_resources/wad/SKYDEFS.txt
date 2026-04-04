@@ -1,0 +1,94 @@
+{
+  "type": "skydefs",
+  "version": "1.0.0",
+  "metadata": { },
+  "data":
+  {
+    "skies":
+	[
+      {
+        "type": 1,	
+		"name": "FIREBAK1",
+		"mid": 100,
+		"scrollx": 0,
+		"scrolly": 0,
+		"scalex": 1,
+		"scaley": 1,
+        "fire":
+        {
+          "updatetime": 0.05715,
+          "palette":
+          [
+            0, 47, 191, 187, 235, 234, 232, 167, 166, 165, 223, 221, 220, 219, 217, 216, 215, 214, 213, 164, 163, 162, 161, 160, 231, 230, 229, 228, 227, 226, 225, 224
+          ]
+        },
+		"foregroundtex": null
+	  },
+      {
+        "type": 2,	
+		"name": "FIRESKY1",
+		"mid": 120,
+		"scrollx": 0,
+		"scrolly": 0,
+		"scalex": 1.0,
+		"scaley": 1.25,
+        "fire": null,
+		"foregroundtex":
+		{
+		  "name": "FIREBAK1",
+		  "mid": 100,
+		  "scrollx": 0,
+		  "scrolly": 0,
+		  "scalex": 1.0,
+		  "scaley": 1.25
+		}
+	  },
+      {
+        "type": 2,	
+		"name": "SKY9",
+		"mid": 100,
+		"scrollx": 4.375,
+		"scrolly": 0.546875,
+		"scalex": 1,
+		"scaley": 1,
+		"fire": null,
+		"foregroundtex":
+		{
+		  "name": "SKY9MASK",
+		  "mid": 90,
+		  "scrollx": 0,
+		  "scrolly": 0,
+		  "scalex": 1,
+		  "scaley": 1.25
+		}
+	  }
+	],
+    "flatmapping":
+    [
+      {
+        "flat": "F_FSKY1",
+        "sky": "FIRESKY1"
+      },
+      {
+        "flat": "F_RSKY1",
+        "sky": "SKY1"
+      },
+      {
+        "flat": "F_RSKY2",
+        "sky": "SKY2"
+      },
+      {
+        "flat": "F_RSKY3",
+        "sky": "SKY3"
+      },
+      {
+        "flat": "F_RSKY4",
+        "sky": "SKY4"
+      },
+      {
+        "flat": "F_RSKY9",
+        "sky": "SKY9"
+      }
+    ]
+  }
+}

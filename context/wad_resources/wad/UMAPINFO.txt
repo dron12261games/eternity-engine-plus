@@ -1,0 +1,15 @@
+map E1M1
+{
+  levelname = "Boom test"
+  bossaction = DEHTHING_Vassago, 103, 73
+  bossaction = DEHTHING_Tyrant, 112, 86
+  bossaction = DEHTHING_TyrantBoss1, 112, 67
+  bossaction = DEHTHING_TyrantBoss2, 112, 72
+  bossaction = SpiderMastermind, 2070, 0
+  endfinale = "NEWCAST"
+  intertext = "You are defeat the test!",
+  "",
+  "",
+  "Make time fast to self author!"
+  interbackdrop = "FLAT5_2"
+}

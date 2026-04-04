@@ -1,0 +1,456 @@
+{
+  "type": "finale",
+  "version": "1.0.0",
+  "metadata": { },
+  "data":
+  {
+    "type": 2,
+	"music": "D_E2M8",
+	"musicloops": true,
+	"background": "PFUB2",
+	"donextmap": true,
+	"bunny": null,
+	"castrollcall":
+	{
+	  "castanims":
+	  [
+	    {
+		  "name": "USER_OKAYCACO",
+		  "alertsound": 0,
+		  "aliveframes":
+		  [
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.5,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": true,
+			  "duration": 0.5,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0572,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": true,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0572,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0572,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": true,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0572,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0572,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": true,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0572,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0572,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": true,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0572,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0572,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": true,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0572,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0572,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": true,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0572,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA2A8",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.0858,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 0.5,
+			  "sound": 0
+			},
+		    {
+			  "lump": "HEADA1",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": true,
+			  "duration": 0.5,
+			  "sound": 0
+			}
+		  ],
+		  "deathframes":
+		  [
+		    {
+			  "lump": "HEADA5",
+			  "tranmap": null,
+			  "translation": "CACOYLLW",
+			  "flipped": false,
+			  "duration": 2,
+			  "sound": 42
+			}
+	      ]
+		},
+	    {
+		  "name": "CC_HERO",
+		  "alertsound": 0,
+		  "aliveframes":
+		  [
+		    {
+			  "lump": "PLAYA1",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYB1",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYC1",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYD1",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYA2A8",
+			  "tranmap": null,
+			  "translation": "T_BROWN",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYB2B8",
+			  "tranmap": null,
+			  "translation": "T_BROWN",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYC2C8",
+			  "tranmap": null,
+			  "translation": "T_BROWN",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYD2D8",
+			  "tranmap": null,
+			  "translation": "T_BROWN",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYA2A8",
+			  "tranmap": null,
+			  "translation": "T_RED",
+			  "flipped": true,
+			  "duration": 0.1143,
+			  "sound": 25
+			},
+		    {
+			  "lump": "PLAYB2B8",
+			  "tranmap": null,
+			  "translation": "T_RED",
+			  "flipped": true,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYC2C8",
+			  "tranmap": null,
+			  "translation": "T_RED",
+			  "flipped": true,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYD2D8",
+			  "tranmap": null,
+			  "translation": "T_RED",
+			  "flipped": true,
+			  "duration": 0.1143,
+			  "sound": 0
+			}
+		  ],
+		  "deathframes":
+		  [
+		    {
+			  "lump": "PLAYG1",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 31
+			},
+		    {
+			  "lump": "PLAYO0",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYP0",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYQ0",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYR0",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYS0",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYT0",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYU0",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYV0",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 0.1143,
+			  "sound": 0
+			},
+		    {
+			  "lump": "PLAYW0",
+			  "tranmap": null,
+			  "translation": "T_INDIGO",
+			  "flipped": false,
+			  "duration": 1,
+			  "sound": 81
+			}
+		  ]
+		}
+	  ]
+	}
+  }
+}

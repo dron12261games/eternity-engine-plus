@@ -3062,6 +3062,81 @@ static bool deh_GetData(char *s, char *k, int *l, char **strval)
     return okrc;
 }
 
+// ====================================================================
+// D_DEHHasDoomVersion
+// Purpose: Check if a DEH file has a Doom version header with the 
+//          specified version number
+// Args:    rawdata -- pointer to the raw data of the DEH file
+//          rawsize -- size of the raw data
+//          version -- the Doom version number to check for
+// Returns: bool: True if the DEH file has a Doom version header with 
+//          the specified version number, false otherwise
+// Notes:   This function is used to quickly check if a DEH file is 
+//          compatible with a specific Doom version before attempting 
+//          to parse it fully. It looks for a line in the DEH file that 
+//          starts with "Doom version" and checks if the version number 
+//          matches the specified version.
+bool D_DEHHasDoomVersion(const void *rawdata, size_t rawsize, int version)
+{
+    if(!rawdata || !rawsize)
+        return false;
+
+    const char *p   = static_cast<const char *>(rawdata);
+    const char *end = p + rawsize;
+
+    // Look for a line that starts with "Doom version" and check the version number
+    while(p < end)
+    {
+        // Find the end of the current line
+        const char *lineStart = p;
+        while(p < end && *p != '\n' && *p != '\r')
+            ++p;
+
+        // Extract the line into a buffer for processing
+        size_t lineLen = static_cast<size_t>(p - lineStart);
+        if(lineLen >= DEH_BUFFERMAX)
+            lineLen = DEH_BUFFERMAX - 1;
+
+        // Copy the line into a buffer and null-terminate it
+        char line[DEH_BUFFERMAX];
+        memcpy(line, lineStart, lineLen);
+        line[lineLen] = '\0';
+
+        // Skip any leading newlines or carriage returns
+        while(p < end && (*p == '\n' || *p == '\r'))
+            ++p;
+
+        // Strip leading and trailing whitespace from the line
+        lfstrip(line);
+        rstrip(line);
+
+        // Skip empty lines and comments
+        char *s = ptr_lstrip(line);
+        if(!*s || *s == '#')
+            continue;
+
+        // Check if the line starts with "Doom version"
+        if(!strncasecmp(s, "Doom version", 12))
+        {
+            char  key[DEH_MAXKEYLEN];
+            int   value = 0;
+            char *strval;
+
+            if(!deh_GetData(s, key, &value, &strval))
+                return false;
+
+            return value == version;
+        }
+
+        // If we reach a line that starts with "Thing" or "[", 
+        // we can stop looking for the version header
+        if(!strncasecmp(s, "Thing", 5) || *s == '[')
+            break;
+    }
+
+    return false;
+}
+
 //---------------------------------------------------------------------
 //
 // $Log: d_deh.c,v $
