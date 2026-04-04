@@ -75,5 +75,4 @@ user/shots/*.pcx
 user/shots/*.png
 user/shots/*.tga
 macosx/EternityEngine.xcodeproj/xcshareddata/xcschemes
-
 out/
