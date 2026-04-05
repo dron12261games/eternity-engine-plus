@@ -1,4 +1,4 @@
-//
+﻿//
 // The Eternity Engine
 // Copyright (C) 2025 James Haley et al.
 //
@@ -39,6 +39,7 @@
 #include "e_weapons.h"
 #include "hu_over.h" // haleyjd
 #include "i_video.h"
+#include "id24_sbardef.h"
 #include "metaapi.h"
 #include "m_cheat.h"
 #include "m_random.h"
@@ -748,6 +749,9 @@ static void ST_DoomTicker()
 void ST_Ticker()
 {
     GameModeInfo->StatusBar->Ticker();
+
+    // ID24 SBARDEF runtime tick
+    id24::ID24_Ticker();
 }
 
 static int st_palette = 0;
@@ -1079,6 +1083,21 @@ void ST_Drawer(bool fullscreen)
     st_backgroundon = !fullscreen || (automapactive && !automap_overlay);
 
     ST_doPaletteStuff(); // Do red-/gold-shifts from damage/items
+
+    // Legacy logic: in true fullscreen without automap overlay,
+    // draw only graphical HUD (if enabled).
+    const bool canDrawStatus = !(fullscreen && (!automapactive || automap_overlay)) || fshud;
+
+    // ID24 SBARDEF: update selected bar index from current screen size.
+    if(canDrawStatus && id24::ID24_HasActiveStatusBar())
+    {
+        id24::ID24_UpdateSBARDEFBarIndex(screenSize);
+
+        // Runtime hook for future SBARDEF renderer.
+        // Current implementation returns false, so legacy path remains active.
+        if(id24::ID24_DrawSBARDEF(fullscreen, fshud))
+            return;
+    }
 
     // sf: draw nothing in fullscreen
     // tiny bit faster and also removes the problem of status bar

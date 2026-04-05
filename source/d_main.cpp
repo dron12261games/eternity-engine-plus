@@ -69,6 +69,7 @@
 #include "id24_misc.h"
 #include "id24_gameconf.h"
 #include "id24_translation.h"
+#include "id24_sbardef.h"
 #include "in_lude.h"
 #include "m_argv.h"
 #include "m_compare.h"
@@ -1699,6 +1700,9 @@ static void D_DoomInit()
 
     // Load demo loop info (must be before EDF, but after D_InitGMIPostWads)
     id24::LoadDemoLoop();
+
+    // Load SBARDEF scaffold (fallbacks to legacy status bar on any failure)
+    id24::ID24_LoadSBARDEF();
 
     // Identify root EDF file and process EDF
     D_LoadEDF(gfs);
