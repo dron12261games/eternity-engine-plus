@@ -68,6 +68,7 @@
 #include "id24_demoloop.h"
 #include "id24_misc.h"
 #include "id24_gameconf.h"
+#include "id24_translation.h"
 #include "in_lude.h"
 #include "m_argv.h"
 #include "m_compare.h"
@@ -1643,6 +1644,24 @@ static void D_DoomInit()
     // ID24 GAMECONF loading
     id24::ID24_LoadGameconfEarly();
 
+    usermsg("GAMECONF summary: executable=%s, mode=%s", id24::ID24_GameconfResolvedExecutable(),
+            id24::ID24_GameconfResolvedMode());
+
+    if(id24::ID24_GameconfHasIwad())
+        usermsg("GAMECONF iwad: %s", id24::ID24_GameconfIwad());
+
+    if(id24::ID24_GameconfNumPwads() > 0)
+        usermsg("GAMECONF pwads: %zu", id24::ID24_GameconfNumPwads());
+
+    if(id24::ID24_GameconfHasWadTranslation())
+        usermsg("GAMECONF wadtranslation: %s", id24::ID24_GameconfWadTranslation());
+
+    if(id24::ID24_GameconfHasPlayerTranslations())
+        usermsg("GAMECONF playertranslations: %zu", id24::ID24_GameconfNumPlayerTranslations());
+
+    if(id24::ID24_GameconfHasOptions())
+        usermsg("GAMECONF options: set");
+
     // ID24 complvl autodetect
     id24::ID24_DetectAndEnable();
 
@@ -1662,6 +1681,9 @@ static void D_DoomInit()
     // jff 4/24/98 load color translation lumps
     // haleyjd 09/06/12: need to do this before EDF
     V_InitColorTranslation();
+
+    // ID24 TRANSLATION loading (phase 1 scaffold)
+    id24::ID24_LoadTranslations();
 
     // haleyjd 08/28/13: init console command list
     C_AddCommands();

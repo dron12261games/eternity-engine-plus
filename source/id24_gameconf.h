@@ -36,6 +36,10 @@ namespace id24
 // This should be called early in the startup process, before IWAD detection and autoloads
 void ID24_LoadGameconfEarly();
 
+// Returns whether GAMECONF specified an executable and mode
+const char *ID24_GameconfResolvedExecutable();
+const char *ID24_GameconfResolvedMode();
+
 // Accessors for GAMECONF state
 bool        ID24_GameconfHasIwad();
 const char *ID24_GameconfIwad();
@@ -54,6 +58,10 @@ const char *ID24_GameconfOptions();
 bool        ID24_GameconfHasPlayerTranslations();
 size_t      ID24_GameconfNumPlayerTranslations();
 const char *ID24_GameconfPlayerTranslationAt(size_t index);
+
+// Returns whether GAMECONF specified any WAD translation, and if so, allows access to it
+bool ID24_GameconfHasWadTranslation();
+const char *ID24_GameconfWadTranslation();
 
 } // namespace id24
 

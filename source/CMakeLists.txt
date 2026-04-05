@@ -380,6 +380,8 @@ function(eternity_target_sources _TARGET)
       "${CMAKE_CURRENT_SOURCE_DIR}/id24_misc.h"
       "${CMAKE_CURRENT_SOURCE_DIR}/id24_gameconf.cpp"
       "${CMAKE_CURRENT_SOURCE_DIR}/id24_gameconf.h"
+      "${CMAKE_CURRENT_SOURCE_DIR}/id24_translation.cpp"
+      "${CMAKE_CURRENT_SOURCE_DIR}/id24_translation.h"
       SOURCE_GROUP "Source Files\\\\IN"
       "${CMAKE_CURRENT_SOURCE_DIR}/hi_stuff.cpp"
       "${CMAKE_CURRENT_SOURCE_DIR}/hi_stuff.h"

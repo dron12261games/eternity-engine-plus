@@ -80,6 +80,7 @@
 #include "v_misc.h"
 #include "v_video.h"
 #include "w_wad.h"
+#include "id24_translation.h"
 
 // Local constants (ioanch)
 // Bounding box distance to avoid and get away from edge portals
@@ -2774,7 +2775,12 @@ void P_SpawnPlayer(mapthing_t *mthing)
     mobj = P_SpawnMobj(x, y, z, p->pclass->type);
 
     // sf: set color translations for player sprites
-    mobj->colour = players[mthing->type - 1].colormap;
+    // ID24 translation lookup is safe here; if unavailable/invalid, fallback keeps vanilla colormap
+    const int id24TranslationNum = id24::ID24_GetPlayerTranslationNum(static_cast<size_t>(mthing->type - 1));
+    if(id24TranslationNum > 0)
+        mobj->colour = id24TranslationNum;
+    else
+        mobj->colour = players[mthing->type - 1].colormap;
 
     mobj->angle  = R_WadToAngle(mthing->angle);
     mobj->player = p;

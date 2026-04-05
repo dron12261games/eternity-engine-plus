@@ -1,4 +1,4 @@
-//
+﻿//
 // The Eternity Engine
 // Copyright (C) 2025 James Haley et al.
 //
@@ -33,11 +33,42 @@
 #include "v_patchfmt.h"
 #include "v_png.h"
 #include "z_auto.h"
+#include "id24_translation.h"
 
 // A global instance of PatchLoader for passing to WadDirectory methods
 PatchLoader PatchLoader::patchFmt;
 
 size_t PatchLoader::DefaultPatchSize;
+
+// Applies a palette translation table to patch pixel payloads in-place.
+// Expects patch data in native (already formatted) layout.
+static void V_ApplyTranslationToPatchPixels(patch_t *patch, const byte *translation)
+{
+    if(!patch || !translation)
+        return;
+
+    const int width = patch->width;
+    if(width <= 0)
+        return;
+
+    byte *base = reinterpret_cast<byte *>(patch);
+
+    for(int c = 0; c < width; ++c)
+    {
+        byte *rover = base + patch->columnofs[c];
+
+        while(*rover != 0xff)
+        {
+            const int count = *(rover + 1);
+            byte     *src   = rover + 3;
+
+            for(int i = 0; i < count; ++i)
+                src[i] = translation[src[i]];
+
+            rover = src + count + 1;
+        }
+    }
+}
 
 //
 // PatchLoader::GetDefaultPatch
@@ -160,7 +191,11 @@ WadLumpLoader::Code PatchLoader::verifyData(lumpinfo_t *lump) const
             Z_Free(lump->cache[fmt]);
             VPNGImage::LoadAsPatch(lump->selfindex, curTag, &lump->cache[fmt]);
             if(lump->cache[fmt])
+            {
+                V_ApplyTranslationToPatchPixels(static_cast<patch_t *>(lump->cache[fmt]),
+                                                id24::ID24_GetWadTranslation());
                 return CODE_NOFMT;
+            }
         }
 
         // Maybe it's linear?
@@ -172,6 +207,10 @@ WadLumpLoader::Code PatchLoader::verifyData(lumpinfo_t *lump) const
             ZAutoBuffer buf;
             buf.alloc(lump->size, false);
             memcpy(buf.get(), lump->cache[fmt], lump->size);
+
+            // ID24: apply active wadtranslation to raw linear indexed pixels.
+            id24::ID24_ApplyWadTranslationToBuffer(buf.getAs<byte *>(), lump->size);
+
             Z_Free(lump->cache[fmt]);
             V_LinearToPatch(buf.getAs<byte *>(), w, h, nullptr, curTag, &lump->cache[fmt]);
             if(lump->cache[fmt])
@@ -214,6 +253,10 @@ void PatchLoader::formatRaw(void *data) const
 WadLumpLoader::Code PatchLoader::formatData(lumpinfo_t *lump) const
 {
     formatRaw(lump->cache[formatIndex()]);
+
+    // ID24: apply active wadtranslation to normal patch payload pixels.
+    V_ApplyTranslationToPatchPixels(static_cast<patch_t *>(lump->cache[formatIndex()]), id24::ID24_GetWadTranslation());
+
     return CODE_OK;
 }
 
@@ -229,6 +272,10 @@ bool PatchLoader::VerifyAndFormat(void *data, size_t size)
     if(patchFmt.checkData(data, size))
     {
         patchFmt.formatRaw(data);
+
+        // ID24: keep utility path consistent with cache/format path.
+        V_ApplyTranslationToPatchPixels(static_cast<patch_t *>(data), id24::ID24_GetWadTranslation());
+
         return true;
     }
     return false;

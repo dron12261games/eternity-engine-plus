@@ -488,6 +488,18 @@ void ID24_LoadGameconfEarly()
             g_state.hasOptions ? "set" : "unset");
 }
 
+// Returns the resolved executable level from the GAMECONF data, or "unset" if not set
+const char *ID24_GameconfResolvedExecutable()
+{
+    return exeToStr(g_maxExeLevel);
+}
+
+// Returns the resolved mode from the GAMECONF data, or "unset" if not set
+const char *ID24_GameconfResolvedMode()
+{
+    return modeToStr(g_maxMode);
+}
+
 // Returns whether the GAMECONF specified an IWAD
 bool ID24_GameconfHasIwad()
 {
@@ -511,7 +523,7 @@ const char *ID24_GameconfPwadAt(size_t index)
     return index < g_state.pwads.size() ? g_state.pwads[index].c_str() : nullptr;
 }
 
-// Returns whether the GAMECONF specified a wad translation
+// Returns whether the GAMECONF specified options
 bool ID24_GameconfHasOptions()
 {
     return g_state.hasOptions;
@@ -540,6 +552,18 @@ size_t ID24_GameconfNumPlayerTranslations()
 const char *ID24_GameconfPlayerTranslationAt(size_t index)
 {
     return index < g_state.playertranslations.size() ? g_state.playertranslations[index].c_str() : nullptr;
+}
+
+// Returns whether the GAMECONF specified a WAD translation
+bool ID24_GameconfHasWadTranslation()
+{
+    return g_state.hasWadTranslation;
+}
+
+// Returns the WAD translation name specified in the GAMECONF, or nullptr if not set
+const char *ID24_GameconfWadTranslation()
+{
+    return g_state.hasWadTranslation ? g_state.wadtranslation.c_str() : nullptr;
 }
 
 } // namespace id24
