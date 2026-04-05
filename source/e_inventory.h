@@ -1,4 +1,4 @@
-//
+﻿//
 // The Eternity Engine
 // Copyright (C) 2025 James Haley, Max Waine, et al.
 //
@@ -218,9 +218,6 @@ itemeffect_t *E_KeyItemForIndex(size_t idx);
 // Give all "key" type artifacts to a player
 int E_GiveAllKeys(player_t &player);
 
-// Take all "key" type artifacts from a player
-int E_TakeAllKeys(player_t &player);
-
 // Check if a player is able to unlock a lock, by its lock ID.
 bool E_PlayerCanUnlock(const player_t &player, int lockID, bool remote);
 
@@ -237,7 +234,8 @@ bool E_CanMoveInventoryCursor(const player_t *player, const int amount, const in
 bool E_PlayerHasVisibleInvItem(const player_t &player);
 
 // Tries to use the currently selected item.
-void E_TryUseItem(player_t &player, inventoryitemid_t ID);
+// Returns true if item was successfully used, otherwise false
+bool E_TryUseItem(player_t &player, inventoryitemid_t ID);
 
 // Obtain an item effect definition for its inventory item ID
 itemeffect_t *E_EffectForInventoryItemID(inventoryitemid_t id);
@@ -267,7 +265,7 @@ bool E_PlayerHasBackpack(const player_t &player);
 bool E_GiveBackpack(player_t &player);
 
 // Special function to remove backpack.
-bool E_RemoveBackpack(player_t &player);
+bool E_RemoveBackpack(const player_t &player);
 
 // Lookup the maximum amount a player can carry of a specific artifact type.
 int E_GetMaxAmountForArtifact(const player_t &player, const itemeffect_t *artifact);
@@ -290,6 +288,12 @@ bool E_GiveInventoryItem(player_t &player, const itemeffect_t *artifact, GiveAmo
 
 e_pickupfx_t *E_PickupFXForName(const char *name);
 e_pickupfx_t *E_PickupFXForSprNum(spritenum_t sprnum);
+
+// Find the best pickup effect for an item, by name.
+// This is used for determining what pickup effect to use when an item is picked up,
+// and is based on the item's name and properties.
+// Returns nullptr if no appropriate pickup effect is found.
+const e_pickupfx_t *E_FindBestPickupFX(const char *itemname, const itemeffect_t *effect);
 
 pickupflags_e E_PickupFlagsForStr(const char *flagstr);
 
@@ -315,14 +319,13 @@ enum class RemoveMore : bool
     no,
     yes
 };
-itemremoved_e E_RemoveInventoryItem(player_t &player, const itemeffect_t *artifact, int amount,
+itemremoved_e E_RemoveInventoryItem(const player_t &player, const itemeffect_t *artifact, int amount,
                                     RemoveMore removemore = RemoveMore::no);
 
 // Call at the end of a hub, or a level that isn't part of a hub, to clear
 // out items that don't persist.
-void E_InventoryEndHub(player_t *player);
+void E_InventoryEndHub(const player_t *player);
 
-// Call to completely clear a player's inventory.
 void E_ClearInventory(player_t *player);
 
 // Get allocated size of player inventory arrays

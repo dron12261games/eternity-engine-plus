@@ -1,4 +1,4 @@
-//
+﻿//
 // The Eternity Engine
 // Copyright (C) 2025 James Haley, Max Waine, et al.
 //
@@ -26,6 +26,8 @@
 
 #define NEED_EDF_DEFINITIONS
 
+#include <algorithm> // for std::find
+
 #include "z_zone.h"
 #include "i_system.h"
 
@@ -50,6 +52,7 @@
 #include "g_game.h"
 #include "info.h"
 #include "m_collection.h"
+#include "m_utils.h"
 #include "metaapi.h"
 #include "p_inter.h"
 #include "p_mobj.h"
@@ -225,6 +228,7 @@ static MetaKeyIndex keyUseEffect     (KEY_USEEFFECT     );
 static MetaKeyIndex keyUseAction     (KEY_USEACTION     );
 static MetaKeyIndex keyUseSound      (KEY_USESOUND      );
 static MetaKeyIndex keyArgs          (KEY_ARGS          );
+static MetaKeyIndex keyUndroppable   (KEY_UNDROPPABLE   );
 
 // Keys for specially treated artifact types
 static MetaKeyIndex keyBackpackItem  (ARTI_BACKPACKITEM );
@@ -1412,26 +1416,6 @@ int E_GiveAllKeys(player_t &player)
     return keysGiven;
 }
 
-//
-// E_TakeAllKeys
-//
-// Take away every artifact a player has that is of "key" type.
-// Returns the number of keys taken away.
-//
-int E_TakeAllKeys(player_t &player)
-{
-    size_t numKeys   = E_GetNumKeyItems();
-    int    keysTaken = 0;
-
-    for(size_t i = 0; i < numKeys; i++)
-    {
-        if(E_RemoveInventoryItem(player, E_KeyItemForIndex(i), -1) != INV_NOTREMOVED)
-            ++keysTaken;
-    }
-
-    return keysTaken;
-}
-
 //=============================================================================
 //
 // Effect Hash Table
@@ -1603,6 +1587,84 @@ static void E_processPickupItems(cfg_t *cfg)
         if((str = cfg_getstr(sec, ITEM_PICKUP_SOUND)))
             pfx->sound = estrdup(str);
     }
+}
+
+//
+// E_FindBestPickupFX
+//
+// Given an item name and/or an item effect, find the best matching pickupfx definition, if any.
+// The item name is used to look for a pickupfx definition with a matching name field;
+// the item effect is used to look for pickupfx definitions that list that effect in their effects list.
+// If multiple pickupfx definitions match, the best one is chosen according to some tie-breaking rules (see below).
+// If no pickupfx definition matches, nullptr is returned.
+//
+// The item name is optional and is only used to find a direct name match; the item effect is required
+// for matching against pickupfx definitions that don't have a name or don't match the given name.
+//
+const e_pickupfx_t *E_FindBestPickupFX(const char *itemname, const itemeffect_t *effect)
+{
+    // Try to find a pickupfx definition matching the item name first, if given.
+    if(const e_pickupfx_t *named = E_PickupFXForName(itemname))
+        return named;
+
+    if(!effect)
+        return nullptr;
+
+    const e_pickupfx_t *bestPickup = nullptr;
+
+    // If no name match, look for a pickupfx that lists the given effect in its effects list.
+    // If multiple pickupfx definitions match, use the following tie-breaking rules:
+    // 1) try to find the one with the fewest total effects, as that is likely to be more specific
+    //    and a better match for the item in question;
+    // 2) if there is still a tie, use the one wich comes first alphabetically by name, ignoring case;
+    // 3) if there is still a tie, use the one which comes first alphabetically by compatname, ignoring case;
+    // 4) if there is still a tie, use the one with the lowest sprite number (or no sprite, which counts as -1),
+    //    as that is likely to be more specific and a better match for the item in question.
+    auto isBetterPickup = [](const e_pickupfx_t *candidate, const e_pickupfx_t *best) {
+        if(!best)
+            return true;
+
+        if(candidate->numEffects != best->numEffects)
+            return candidate->numEffects < best->numEffects;
+
+        const char *candName = candidate->name ? candidate->name : "";
+        const char *bestName = best->name ? best->name : "";
+        int         cmp      = strcasecmp(candName, bestName);
+        if(cmp != 0)
+            return cmp < 0;
+
+        const char *candCName = candidate->compatname ? candidate->compatname : "";
+        const char *bestCName = best->compatname ? best->compatname : "";
+        cmp                   = strcasecmp(candCName, bestCName);
+        if(cmp != 0)
+            return cmp < 0;
+
+        return candidate->sprnum < best->sprnum;
+    };
+
+    // Helper lambda to consider a pickupfx candidate and update the best match if appropriate.
+    auto considerCandidate = [&](const e_pickupfx_t *pfx) {
+        if(!pfx || !pfx->effects || pfx->numEffects == 0)
+            return;
+
+        const auto end = pfx->effects + pfx->numEffects;
+        if(std::find(pfx->effects, end, effect) == end)
+            return;
+
+        if(isBetterPickup(pfx, bestPickup))
+            bestPickup = pfx;
+    };
+
+    // Scan all standalone pickupfx definitions
+    for(const e_pickupfx_t *pfx = nullptr; (pfx = e_PickupNameHash.tableIterator(const_cast<e_pickupfx_t *>(pfx)));)
+        considerCandidate(pfx);
+
+    // Also scan pickupfx definitions attached to sprites,
+    // as they may not be in the name hash if they don't have a name.
+    for(int i = 0; i < NUMMOBJTYPES; i++)
+        considerCandidate(mobjinfo[i]->pickupfx);
+
+    return bestPickup;
 }
 
 //
@@ -1887,13 +1949,15 @@ static useaction_t *E_addUseAction(itemeffect_t *artifact)
 // E_TryUseItem
 //
 // Tries to use the currently selected item.
+// Returns true if item was successfully used, otherwise false
 //
-void E_TryUseItem(player_t &player, inventoryitemid_t ID)
+bool E_TryUseItem(player_t &player, inventoryitemid_t ID)
 {
     invbarstate_t &invbarstate = player.invbarstate;
     itemeffect_t  *artifact    = E_EffectForInventoryItemID(ID);
+
     if(!artifact)
-        return;
+        return false;
     if(E_getItemEffectType(artifact) == ITEMFX_ARTIFACT)
     {
         if(artifact->getInt(keyArtifactType, -1) == ARTI_NORMAL)
@@ -1919,7 +1983,7 @@ void E_TryUseItem(player_t &player, inventoryitemid_t ID)
                     success = P_GivePowerForItem(player, effect);
                     break;
                 default: //
-                    return;
+                    return false;
                 }
             }
 
@@ -1973,8 +2037,10 @@ void E_TryUseItem(player_t &player, inventoryitemid_t ID)
                 // FIXME: Make this behaviour optional, or remove
                 E_MoveInventoryCursor(player, -1, player.inv_ptr);
             }
+            return success;
         }
     }
+    return false;
 }
 
 //
@@ -2221,7 +2287,7 @@ bool E_GiveBackpack(player_t &player)
 //
 // Special function to remove a backpack.
 //
-bool E_RemoveBackpack(player_t &player)
+bool E_RemoveBackpack(const player_t &player)
 {
     auto          backpackItem = runtime_cast<itemeffect_t *>(e_effectsTable.getObject(keyBackpackItem));
     bool          removed      = false;
@@ -2424,7 +2490,8 @@ static void E_removeInventorySlot(const player_t *player, inventoryslot_t *slot)
 // in the inventory, everything will be removed. For compatibility reasons,
 // this parameter is false by default.
 //
-itemremoved_e E_RemoveInventoryItem(player_t &player, const itemeffect_t *artifact, int amount, RemoveMore removemore)
+itemremoved_e E_RemoveInventoryItem(const player_t &player, const itemeffect_t *artifact, int amount,
+                                    RemoveMore removemore)
 {
     inventoryslot_t *slot = E_InventorySlotForItem(player, artifact);
 
@@ -2464,9 +2531,6 @@ itemremoved_e E_RemoveInventoryItem(player_t &player, const itemeffect_t *artifa
         }
     }
 
-    // Select an empty weapon if player has no weapons left (without giving dummy weapon)
-    E_DefaultToUnknownWeapon(player);
-
     return ret;
 }
 
@@ -2477,7 +2541,7 @@ itemremoved_e E_RemoveInventoryItem(player_t &player, const itemeffect_t *artifa
 // function to strip all inventory items that are not meant to remain across
 // levels to their max hub amount.
 //
-void E_InventoryEndHub(player_t *player)
+void E_InventoryEndHub(const player_t *player)
 {
     for(inventoryindex_t i = 0; i < e_maxitemid; i++)
     {
@@ -2503,6 +2567,8 @@ void E_InventoryEndHub(player_t *player)
 // E_ClearInventory
 //
 // Completely clear a player's inventory.
+// If undroppable is true, undroppable items will be kept.
+// If setemptyweapon is true, the player will be given an empty weapon when done.
 //
 void E_ClearInventory(player_t *player)
 {
@@ -2510,6 +2576,10 @@ void E_ClearInventory(player_t *player)
 
     for(inventoryindex_t i = 0; i < e_maxitemid; i++)
     {
+        const itemeffect_t *item = E_EffectForInventoryIndex(*player, i);
+        if(!item || (item->getInt(keyUndroppable, 0) && item->getInt(keyArtifactType, ARTI_NORMAL) != ARTI_WEAPON))
+            continue;
+
         player->inventory[i].amount = 0;
         player->inventory[i].item   = -1;
     }
