@@ -36,6 +36,8 @@ Features
     - IDDKT / RAVKMAP: on open automap, shows unkilled enemies.
     - IDDIT / RAVIMAP: on open automap, shows uncollected items.
     - IDDST / RAVSMAP: on open automap, shows undiscovered secrets.
+  - New Rotate Mode fot automap. Default key binding: R. Toggles between normal and 
+    rotated map orientation.
 
 Improvements
 ------------
