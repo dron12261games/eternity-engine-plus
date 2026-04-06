@@ -39,6 +39,7 @@ New thing type flags:
 New QoL features:
 * New cheat codes for automap: IDDKT/RAVKMAP, IDDIT/RAVIMAP, IDDST/RAVSMAP.
 * PowerFlight, PowerAllMap, and PowerSilencer can now have limited duration and be modded in EDF using the permanent, additivetime, and overrideself flags, just like other powers. This will not affect vanilla Doom and Heretic, nor will it affect cheats, and the fix is aimed at modding capabilities in EDF. However, PowerStrength remains infinite regardless of duration settings.
+* Rotate Mode for automap
 
 ## Bug fixes:
 * Fixed a freeze with an infinite loop when the player had only "Unknown" (dummy weapon) left and tried to change a weapon.
