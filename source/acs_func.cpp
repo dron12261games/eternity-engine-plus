@@ -1135,7 +1135,7 @@ bool ACS_CF_GetPolyobjX(ACS_CF_ARGS)
     polyobj_t *po = Polyobj_GetForNum(argV[0]);
 
     if(po)
-        thread->dataStk.push(po->centerPt.x);
+        thread->dataStk.push(po->spawnSpot.x);
     else
         thread->dataStk.push(0x7FFF0000);
 
@@ -1152,7 +1152,7 @@ bool ACS_CF_GetPolyobjY(ACS_CF_ARGS)
     polyobj_t *po = Polyobj_GetForNum(argV[0]);
 
     if(po)
-        thread->dataStk.push(po->centerPt.y);
+        thread->dataStk.push(po->spawnSpot.y);
     else
         thread->dataStk.push(0x7FFF0000);
 
