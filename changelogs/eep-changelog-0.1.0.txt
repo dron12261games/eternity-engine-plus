@@ -38,6 +38,10 @@ Features
     - IDDST / RAVSMAP: on open automap, shows undiscovered secrets.
   - New Rotate Mode for automap. Default key binding: R. Toggles between normal and 
     rotated map orientation.
+  - New Tag Finder mode for automap. Default key binding: N. When you select a sector 
+    with a tag, it displays the linedef with the action that affects that sector. 
+    Similarly, when you select a linedef with an action, it displays all the sectors 
+    that it affects.
 
 Improvements
 ------------
