@@ -26,6 +26,9 @@
 
 #include "m_fixed.h"
 
+#define MAPBITS 12
+#define FRACTOMAPBITS (FRACBITS-MAPBITS)
+
 // Used by ST StatusBar stuff.
 enum
 {
