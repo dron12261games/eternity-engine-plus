@@ -42,6 +42,7 @@ Features
     with a tag, it displays the linedef with the action that affects that sector. 
     Similarly, when you select a linedef with an action, it displays all the sectors 
     that it affects.
+  - Portal overlay mode now can be toggled with a key bind (default: P).
 
 Improvements
 ------------

@@ -1097,6 +1097,10 @@ bool AM_Responder(const event_t *ev)
             tagfindermode = true;
             return true;
 
+        case ka_map_portaloverlay: // toggle portal overlay mode
+            mapportal_overlay = !mapportal_overlay;
+            return true;
+
         case ka_map_grid:                 // toggle grid
             automap_grid = !automap_grid; // killough 2/28/98
             // Ty 03/27/98 - *not* externalized
