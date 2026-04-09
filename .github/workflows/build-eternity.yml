@@ -34,20 +34,20 @@ jobs:
     - name: Add text files
       if: github.event_name == 'workflow_dispatch'
       run: |
-        Copy-Item COPYING build32/eternity/Release/COPYING.txt
-        Copy-Item COPYING-EE build32/eternity/Release/COPYING-EE.txt
-        Copy-Item docs/readme.txt "build32/eternity/Release/ee-$(git describe --tags).txt"
+        Copy-Item COPYING build32/eternity-plus/Release/COPYING.txt
+        Copy-Item COPYING-EE build32/eternity-plus/Release/COPYING-EE.txt
+        Copy-Item docs/readme.txt "build32/eternity-plus/Release/ee-$(git describe --tags).txt"
 
-        Copy-Item COPYING build64/eternity/Release/COPYING.txt
-        Copy-Item COPYING-EE build64/eternity/Release/COPYING-EE.txt
-        Copy-Item docs/readme.txt "build64/eternity/Release/ee-$(git describe --tags).txt"
+        Copy-Item COPYING build64/eternity-plus/Release/COPYING.txt
+        Copy-Item COPYING-EE build64/eternity-plus/Release/COPYING-EE.txt
+        Copy-Item docs/readme.txt "build64/eternity-plus/Release/ee-$(git describe --tags).txt"
 
     - name: Archive release build
       if: github.event_name == 'workflow_dispatch'
       uses: actions/upload-artifact@v4
       with:
         name: windows-release
-        path: build??/eternity/Release
+        path: build??/eternity-plus/Release
 
   build-macos:
     runs-on: macos-latest

@@ -1,0 +1,93 @@
+﻿Eternity Engine Plus v0.1.0 Changelog
+=====================================
+
+Features
+--------
+- New ACS functions:
+  - Inventory, armor and item control:
+    - GiveInventory(str item_name, int amount, bool silent):
+      gives items/effects to player; negative amount gives maximum.
+    - ClearInventory():
+      clears inventory, weapons/ammo, keys, powers, armor, backpack (except UNDROPPABLE).
+    - UseInventory(str item_name):
+      consumes/uses an inventory item; returns success state.
+    - GetMaxInventory(int tid, str item_name):
+      returns max carry/heal/repair/duration value for specified inventory type.
+    - GetArmorInfo(int infotype):
+      returns armor state (armor, savefactor, savedivisor).
+  - Sector colormap utilities:
+    - GetSectorColormap(int tag, int type):
+      returns colormap name from first matching sector.
+    - SetSectorColormap(int tag, int type, str colormap, bool isBoom):
+      sets sector colormap and logic mode.
+    - IsSectorColormapBoomkind(int tag, int type):
+      reports colormap logic type (Boom-style or Eternity-style).
+
+- New gameplay/modding extensions:
+  - New DeHackEd/EDF codepointer:
+    - A_LightEx(int lightDelta):
+      changes render light level by custom delta (positive/negative).
+  - New thing flags:
+    - NOSEEKINVISIBLE:
+      seeker projectiles/actors ignore invisible players.
+    - IGNORESEEKER:
+      actor cannot be targeted by seeker logic.
+  - New automap cheat codes:
+    - IDDKT / RAVKMAP: on open automap, shows unkilled enemies.
+    - IDDIT / RAVIMAP: on open automap, shows uncollected items.
+    - IDDST / RAVSMAP: on open automap, shows undiscovered secrets.
+  - New Rotate Mode for automap. Default key binding: R. Toggles between normal and 
+    rotated map orientation.
+  - New Tag Finder mode for automap. Default key binding: N. When you select a sector 
+    with a tag, it displays the linedef with the action that affects that sector. 
+    Similarly, when you select a linedef with an action, it displays all the sectors 
+    that it affects.
+
+Improvements
+------------
+- ACS inventory API expansion:
+  - TakeInventory(str item_name, int amount):
+    now supports all major categories (items, health, armor, weapons, backpack, powers).
+  - TakeInventory amount handling:
+    over-limit values remove all available amount; negative amount means remove all.
+  - CheckInventory(str item_name):
+    now supports all major categories consistently with TakeInventory/GiveInventory.
+
+- EDF power tuning improvements:
+  - PowerFlight, PowerAllMap, PowerSilencer:
+    can now be finite and tuned via permanent, additivetime, overrideself.
+  - PowerStrength:
+    remains intentionally infinite for compatibility with intended behavior.
+
+- Automap improvements:
+ - Portal overlay mode now can be toggled with a key bind (default: P).
+ - Now automap state will update even when automap is open.
+
+Bug fixes
+---------
+- Weapon handling and switching:
+  - Fixed infinite loop freeze when only dummy Unknown weapon remained.
+  - Fixed crash when last weapon ran out of ammo and auto-switch had no valid candidate.
+  - Fixed case where last used weapon remained in hands after full removal via TakeInventory.
+
+- ACS and inventory behavior:
+  - Fixed SetActorProperty issue where APROP_Health did not apply updated health to player.
+  - Fixed alwayspickup behavior for Health/Armor effects:
+    picking lower-cap item no longer reduces current health/armor value.
+
+
+
+
+
+Project information
+-------------------
+- Project name: Eternity Engine Plus
+- Project version: 0.1.0 (WIP)
+- Changelog updated: 2026-04-04
+- Project author: DRON12261
+
+- Base project: Eternity Engine (Team Eternity)
+- Base project version: 4.06.00 (WIP)
+- Main project link: https://github.com/dron12261games/eternity-engine-plus
+- Base project link: https://github.com/team-eternity/eternity
+

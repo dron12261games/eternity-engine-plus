@@ -1,4 +1,4 @@
-//
+﻿//
 // The Eternity Engine
 // Copyright (C) 2025 James Haley, David Hill, et al.
 //
@@ -67,6 +67,7 @@
 #include "doomstat.h"
 #include "metaapi.h"
 #include "e_lib.h"
+#include "e_string.h"
 
 #include "ACSVM/Scope.hpp"
 #include "ACSVM/Thread.hpp"
@@ -2709,6 +2710,7 @@ bool ACS_CF_GiveInventory(ACS_CF_ARGS)
     const auto  info     = &static_cast<ACSThread *>(thread)->info;
     char const *itemname = thread->scopeMap->getString(argV[0])->str;
     const int   amount   = argV[1];
+    const bool  silent   = argC > 2 ? argV[2] : true; // if not silent, apply pickup effects (flash, message, sound)
 
     ScriptedItem item = getScriptedItem(itemname);
 
@@ -2724,18 +2726,76 @@ bool ACS_CF_GiveInventory(ACS_CF_ARGS)
     if(amount == 0)
         return false;
 
+    // Apply pickup effects (flash, message, sound) if not silent.
+    auto applyPickupEffects = [&](player_t *player) {
+        if(silent || !player)
+            return;
+
+        // First try a direct named lookup (standalone pickupeffect definitions)
+        const e_pickupfx_t *pickup = E_PickupFXForName(itemname);
+
+        // Fall back: scan mobjinfo for a ThingType whose inline PickupEffect
+        // references the given inventory item effect
+        if(!pickup)
+        {
+            // Get the item effect pointer for the given item, if it is an item effect at all
+            if(const auto *effPtr = std::get_if<itemeffect_t *>(&item))
+            {
+                // Scan all ThingTypes for a PickupEffect that references this item effect
+                const itemeffect_t *eff = *effPtr;
+                for(int i = 0; i < NUMMOBJTYPES && !pickup; i++)
+                {
+                    const e_pickupfx_t *pfx = mobjinfo[i]->pickupfx;
+
+                    if(!pfx)
+                        continue;
+
+                    const auto end = pfx->effects + pfx->numEffects;
+
+                    // If this pickupfx references the item effect, use it for the pickup and
+                    // stop searching
+                    if(std::find(pfx->effects, end, eff) != end)
+                        pickup = pfx;
+                }
+            }
+        }
+
+        if(!pickup)
+            return;
+
+        const char *message = pickup->message;
+        const char *sound   = pickup->sound;
+
+        // Display pickup message
+        if(message)
+        {
+            if(message[0] == '$')
+                message = E_StringOrDehForName(message + 1);
+            player_printf(player, "%s", message);
+        }
+
+        // Play pickup sound
+        if(sound)
+            S_StartSoundName(player->mo, sound);
+
+        // Flash screen if not disabled for this pickup
+        if(!(pickup->flags & PFXF_NOSCREENFLASH))
+            player->bonuscount += 6;
+    };
+
+    // Give the item to the player(s) and apply pickup effects if not silent
     if(info->mo)
     {
         // FIXME: Needs to be adapted for when Mobjs get inventory if they get inventory
-        if(info->mo->player)
-            P_GiveInventory(info->mo->player, item, amount);
+        if(info->mo->player && P_GiveInventory(info->mo->player, item, amount))
+            applyPickupEffects(info->mo->player);
     }
     else
     {
         for(int pnum = 0; pnum != MAXPLAYERS; ++pnum)
         {
-            if(playeringame[pnum])
-                P_GiveInventory(&players[pnum], item, amount);
+            if(playeringame[pnum] && P_GiveInventory(&players[pnum], item, amount))
+                applyPickupEffects(&players[pnum]);
         }
     }
     return false;
@@ -2855,6 +2915,38 @@ bool ACS_CF_GetMaxInventory(ACS_CF_ARGS)
         thread->dataStk.push(0);
     else
         thread->dataStk.push(P_GetMaxInventory(mo->player, item));
+
+    return false;
+}
+
+//
+// int GetArmorInfo(int infotype);
+//
+bool ACS_CF_GetArmorInfo(ACS_CF_ARGS)
+{
+    auto      info     = &static_cast<ACSThread *>(thread)->info;
+    int const infotype = argV[0];
+
+    if(!info->mo || !info->mo->player)
+        thread->dataStk.push(0);
+    else
+    {
+        switch(infotype)
+        {
+        case 0: // ARMORINFO_ARMORPOINTS
+            thread->dataStk.push(info->mo->player->armorpoints);
+            break;
+        case 1: // ARMORINFO_ARMORFACTOR
+            thread->dataStk.push(info->mo->player->armorfactor);
+            break;
+        case 2: // ARMORINFO_ARMORDIVISOR
+            thread->dataStk.push(info->mo->player->armordivisor);
+            break;
+        default: // UNKNOWN
+            thread->dataStk.push(0);
+            break;
+        }
+    }
 
     return false;
 }
@@ -3142,5 +3234,159 @@ bool ACS_CF_TagWait(ACS_CF_ARGS)
     return true;
 }
 
-// EOF
+enum
+{
+    COLORMAP_MID,
+    COLORMAP_TOP,
+    COLORMAP_BOTTOM
+};
 
+//
+// ACS_CF_GetSectorColormap
+//
+// str GetSectorColormap(int tag, int type);
+//
+bool ACS_CF_GetSectorColormap(ACS_CF_ARGS)
+{
+    int const tag    = argV[0];
+    int const type   = argV[1];
+    int       secnum = P_FindSectorFromTag(tag, -1); // Get only first sector with tag
+
+    // If sector with the given tag doesn't exist, return null string
+    if(secnum == -1)
+    {
+        doom_warningf("ACS_CF_GetSectorColormap: No sector found with tag %d", tag);
+
+        thread->dataStk.push(~ACSenv.getString("")->idx);
+        return false;
+    }
+
+    sector_t   &sector   = sectors[secnum];
+    char const *colormap = nullptr;
+
+    switch(type)
+    {
+    case COLORMAP_MID:    colormap = R_ColormapNameForNum(sector.midmap & ~COLORMAP_BOOMKIND); break;
+    case COLORMAP_TOP:    colormap = R_ColormapNameForNum(sector.topmap & ~COLORMAP_BOOMKIND); break;
+    case COLORMAP_BOTTOM: colormap = R_ColormapNameForNum(sector.bottommap & ~COLORMAP_BOOMKIND); break;
+    default:              doom_warningf("ACS_CF_GetSectorColormap: Invalid colormap type %d", type); break;
+    }
+
+    if(!colormap)
+    {
+        doom_warningf("ACS_CF_GetSectorColormap: No colormap found for sector with tag %d and type %d", tag, type);
+        thread->dataStk.push(~ACSenv.getString("")->idx);
+    }
+    else
+        thread->dataStk.push(~ACSenv.getString(colormap)->idx);
+    return false;
+}
+
+//
+// ACS_CF_IsSectorColormapBoomkind
+//
+// int IsSectorColormapBoomkind(int tag, int type);
+//
+bool ACS_CF_IsSectorColormapBoomkind(ACS_CF_ARGS)
+{
+    int const tag    = argV[0];
+    int const type   = argV[1];
+    int       secnum = P_FindSectorFromTag(tag, -1); // Get only first sector with tag
+
+    // If sector with the given tag doesn't exist, return false
+    if(secnum == -1)
+    {
+        doom_warningf("ACS_CF_IsSectorColormapBoomkind: No sector found with tag %d", tag);
+        thread->dataStk.push(0);
+        return false;
+    }
+
+    sector_t &sector   = sectors[secnum];
+    int       boomkind = -1;
+
+    switch(type)
+    {
+    case COLORMAP_MID:    boomkind = (sector.midmap & COLORMAP_BOOMKIND) != 0; break;
+    case COLORMAP_TOP:    boomkind = (sector.topmap & COLORMAP_BOOMKIND) != 0; break;
+    case COLORMAP_BOTTOM: boomkind = (sector.bottommap & COLORMAP_BOOMKIND) != 0; break;
+    default:
+        doom_warningf("ACS_CF_IsSectorColormapBoomkind: Invalid colormap type %d", type);
+        boomkind = false;
+        break;
+    }
+
+    thread->dataStk.push(boomkind);
+    return false;
+}
+
+//
+// SetSectorColormap
+//
+// bool SetSectorColormap(int tag, int type, string colormap, int isBoom);
+//
+bool ACS_CF_SetSectorColormap(ACS_CF_ARGS)
+{
+    int const   tag          = argV[0];
+    int const   type         = argV[1];
+    const char *colormapName = thread->scopeMap->getString(argV[2])->str;
+    int const   rawColormap  = R_ColormapNumForName(colormapName);
+    int const   boomBit      = argC > 3 ? (argV[3] != 0 ? COLORMAP_BOOMKIND : 0) : 0;
+    int         res          = 0;
+    int         secnum       = -1;
+
+    // If colormap name is empty, we want to use the default colormap (rawColormap of -1),
+    // so treat that as a special case
+    int const useDefault = colormapName[0] == '\0';
+
+    // If colormap type is invalid, don't do anything
+    if(type != COLORMAP_MID && type != COLORMAP_TOP && type != COLORMAP_BOTTOM)
+    {
+        doom_warningf("ACS_CF_SetSectorColormap: Invalid colormap type %d", type);
+
+        thread->dataStk.push(0);
+        return false;
+    }
+
+    // If colormap with the given name doesn't exist, don't do anything
+    if(rawColormap == -1 && !useDefault)
+    {
+        doom_warningf("ACS_CF_SetSectorColormap: Colormap '%s' not found", colormapName);
+
+        thread->dataStk.push(0);
+        return false;
+    }
+
+    // Get the colormap indices we need to set based on the given colormap and whether we're using the default colormap
+    // or not. If we're using the default colormap, we need to determine which default colormap to use based on whether
+    // the sector has the sky flag. Also if isboom is true, we need to use the boom colormap index instead of the
+    // regular one, so we need to take that into account as well
+    int const colormap   = (rawColormap & ~COLORMAP_BOOMKIND) | boomBit;
+    int const defaultmap = (global_cmap_index & ~COLORMAP_BOOMKIND) | boomBit;
+    int const fogmap     = (global_fog_index & ~COLORMAP_BOOMKIND) | boomBit;
+
+    // Set the colormap for all sectors with the given tag
+    while((secnum = P_FindSectorFromTag(tag, secnum)) >= 0)
+    {
+        sector_t &sector = sectors[secnum];
+
+        // If we're using the default colormap, we need to determine which default colormap to use based on whether the
+        // sector has the sky flag. Also if isboom is true, we need to use the boom colormap index instead of the
+        // regular one, so we need to take that into account as well
+        bool      isSky         = (sector.intflags & SIF_SKY) != 0;
+        int const colormapToUse = useDefault ? (isSky ? fogmap : defaultmap) : colormap;
+
+        switch(type)
+        {
+        case COLORMAP_MID:    sector.midmap = colormapToUse; break;
+        case COLORMAP_TOP:    sector.topmap = colormapToUse; break;
+        case COLORMAP_BOTTOM: sector.bottommap = colormapToUse; break;
+        }
+
+        res = 1;
+    }
+
+    thread->dataStk.push(res);
+    return false;
+}
+
+// EOF
