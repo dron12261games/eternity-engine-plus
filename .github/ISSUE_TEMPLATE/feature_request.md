@@ -8,7 +8,8 @@ type: Feature
 
 ---
 
-## Branch: [field for devs]
+## EEP Branch: [field for devs]
+## EE Branch: [field for devs]
 ## Pull request: [field for devs]
 
 **Is your feature request related to a problem? Please describe.**

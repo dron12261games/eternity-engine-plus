@@ -7,5 +7,6 @@ assignees: DRON12261
 
 ---
 
-## Branch: [field for devs]
+## EEP Branch: [field for devs]
+## EE Branch: [field for devs]
 ## Pull request: [field for devs]

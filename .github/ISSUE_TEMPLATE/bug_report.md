@@ -8,7 +8,8 @@ type: Bug
 
 ---
 
-## Branch: [field for devs]
+## EEP Branch: [field for devs]
+## EE Branch: [field for devs]
 ## Pull request: [field for devs]
 
 **Bug or Error Description**
