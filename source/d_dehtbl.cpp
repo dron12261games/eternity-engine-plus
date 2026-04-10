@@ -1,4 +1,4 @@
-//
+﻿//
 // The Eternity Engine
 // Copyright (C) 2025 James Haley et al.
 //
@@ -291,6 +291,8 @@ static const char *s_HUSTR_PLRBROWN     = HUSTR_PLRBROWN;
 static const char *s_HUSTR_PLRRED       = HUSTR_PLRRED;
 static const char *s_AMSTR_FOLLOWON     = AMSTR_FOLLOWON;
 static const char *s_AMSTR_FOLLOWOFF    = AMSTR_FOLLOWOFF;
+static const char *s_AMSTR_ROTATEON     = AMSTR_ROTATEON;
+static const char *s_AMSTR_ROTATEOFF    = AMSTR_ROTATEOFF;
 static const char *s_AMSTR_GRIDON       = AMSTR_GRIDON;
 static const char *s_AMSTR_GRIDOFF      = AMSTR_GRIDOFF;
 static const char *s_AMSTR_MARKEDSPOT   = AMSTR_MARKEDSPOT;
@@ -777,6 +779,8 @@ dehstr_t deh_strlookup[] = {
     // player chat keys removed
     { &s_AMSTR_FOLLOWON,           "AMSTR_FOLLOWON"           },
     { &s_AMSTR_FOLLOWOFF,          "AMSTR_FOLLOWOFF"          },
+    { &s_AMSTR_ROTATEON,           "AMSTR_ROTATEON"           },
+    { &s_AMSTR_ROTATEOFF,          "AMSTR_ROTATEOFF"          },
     { &s_AMSTR_GRIDON,             "AMSTR_GRIDON"             },
     { &s_AMSTR_GRIDOFF,            "AMSTR_GRIDOFF"            },
     { &s_AMSTR_MARKEDSPOT,         "AMSTR_MARKEDSPOT"         },
@@ -1251,6 +1255,7 @@ void A_SargAttack12(actionargs_t *actionargs);
 void A_SelfDestruct(actionargs_t *);
 void A_TurnProjectile(actionargs_t *);
 void A_SubtractAmmo(actionargs_t *);
+void A_LightEx(actionargs_t *);
 
 // MaxW: MBF21 pointers
 void A_SpawnObject(actionargs_t *actionargs);
@@ -1649,6 +1654,7 @@ deh_bexptr deh_bexptrs[] = {
     POINTER(SelfDestruct),
     POINTER(TurnProjectile),
     POINTER(SubtractAmmo),
+    POINTER(LightEx),
 
     // haleyjd 07/13/03: nuke specials
     POINTER(PainNukeSpec),

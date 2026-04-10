@@ -1,4 +1,4 @@
-Changes since v4.05.04
+﻿Changes since v4.05.04
 ======================
 
 Features
@@ -35,6 +35,10 @@ Features
     can heal/repair.
     If PowerArtifact is passed, it returns the duration of this artifact (if it is infinite, it returns -1).
     If type of PowerEffect is passed directly, it returns -1 if effect is infinite by default, otherwise 1.
+  - int GetArmorInfo(int infotype):
+    Allows to directly get information about the current state of the player's armor. If infotype = 0, the current
+    amount of armor will be returned; if 1, savefactor will be returned; if 2, savedivisor will be returned.
+    Otherwise, 0.
 * Next ACS functions has been heavily improved (thanks to DRON12261):
   - void TakeInventory(str item_name, int amount):
     Now, it can be used to take all types of items, as well as health, armor, weapons, backpacks, and all types of
@@ -54,6 +58,14 @@ Features
   lights. Thanks to elf-alchemist for the contribution! Details here: https://github.com/team-eternity/eternity/pull/740
 * Added support for wall texture scaling, which includes top, middle, and bottom X and Y scaling.
 * Added support for wrapping 2-sided middle textures.
+* New thing type flag NOSEEKINVISIBLE for projectiles, which prevents the seeker from targeting players with 
+  invisibility powerup active.
+* New thing type flag IGNORESEEKER for things, which prevents them from being targeted by seekers.
+* New codepointer A_LightEx added, which is an parametrized version of A_Light0/A_Light1/A_Light2. It can be used to 
+  create more complex light sequences, such as a flashlight bright lighting effect. It also can make all darker with 
+  negative brightness values.
+* Added new ACS functions: GetSectorColormap, SetSectorColormap and IsSectorColormapBoomkind. Now it's possible to 
+  change the colormap of a sector during the gameplay.
 
 Improvements
 ------------
@@ -99,6 +111,10 @@ Bug fixes
   additivetime, and overrideself flags, just like other powers. This will not affect vanilla Doom and Heretic, nor will
   it affect cheats, and the fix is aimed at modding capabilities in EDF. However, PowerStrength remains infinite
   regardless of duration settings.
+* Fixed a bug with the “alwayspickup” flag for HealthEffect and ArmorEffect. Previously, if a player picked up a
+  health/armor item with this flag, whose maxamount/maxsaveamount was less than the player's current amount, the
+  player's health/armor would be reset to the maxamount/maxsaveamount of the picked up item. Now, in such a situation,
+  the player's current health/armor will not be reset and will remain unchanged.
 * Fixed EDF includes from lumps included by lumps in the same folder.
 * Fixed translucent PNGs that use a separate palette from the current WAD.
 * Fixed bug with ACS functions CheckActorCeilingTexture, CheckActorFloorTexture, CheckActorProperty,

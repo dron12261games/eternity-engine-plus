@@ -1,4 +1,4 @@
-//
+﻿//
 // The Eternity Engine
 // Copyright (C) 2025 David Hill, James Haley, et al.
 //
@@ -342,7 +342,7 @@ ACSEnvironment::ACSEnvironment() : dir{ nullptr }, global{ getGlobalScope(0) }, 
   //addFuncDataACS0( 78, addCallFunc(ACS_CF_GetThingPowerupTics));
     addFuncDataACS0( 79, addCallFunc(ACS_CF_ChangeActorAngle));
     addFuncDataACS0( 80, addCallFunc(ACS_CF_ChangeActorPitch));
-  //addFuncDataACS0( 81, addCallFunc(ACS_CF_GetArmorInfo));
+    addFuncDataACS0( 81, addCallFunc(ACS_CF_GetArmorInfo));
   //addFuncDataACS0( 82, addCallFunc(ACS_CF_DropInventory));
   //addFuncDataACS0( 83, addCallFunc(ACS_CF_PickThing));
   //addFuncDataACS0( 84, addCallFunc(ACS_CF_IsPointerEqual));
@@ -366,6 +366,9 @@ ACSEnvironment::ACSEnvironment() : dir{ nullptr }, global{ getGlobalScope(0) }, 
     addFuncDataACS0(301, addCallFunc(ACS_CF_GetLineY));
     addFuncDataACS0(302, addCallFunc(ACS_CF_SetAirFriction));
     addFuncDataACS0(303, addCallFunc(ACS_CF_SetPolyobjXY));
+    addFuncDataACS0(304, addCallFunc(ACS_CF_GetSectorColormap));
+    addFuncDataACS0(305, addCallFunc(ACS_CF_SetSectorColormap));
+    addFuncDataACS0(306, addCallFunc(ACS_CF_IsSectorColormapBoomkind));
 
     // clang-format on
 }
