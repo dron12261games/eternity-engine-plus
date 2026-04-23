@@ -91,8 +91,7 @@ Improvements
   specified.
 * Relax UMAPINFO to tolerate "endbunny = false" and "endcast = false". Needed because of released WADs,
   and other popular source ports implementing the specification poorly.
-* Eternity now autodetects if a sky should tile or fade to a median color. Needed because some skies
-  are seamless and designed to tile vertically.
+* Right Alt key can now active the fast exit and fullscreen toggle.
 
 Bug fixes
 ---------
@@ -144,3 +143,5 @@ Bug fixes
 * Fixed skies not rotating correctly past angled visual portals.
 * Fixed crash when using playerdelta with added rebornitem entries (without clearrebornitems).
 * Fixed bad polyobject coordinate control in ACS GetPolyobjX, GetPolyobjY and SetPolyobjXY.
+* Fixed plane and horizon portals getting the wrong colormap.
+* Fixed the Boom sector colormap being chosen for the wrong coordinates from portals.

@@ -41,9 +41,11 @@
 #include "ev_bindings.h"
 #include "g_game.h"
 #include "p_info.h"
+#include "p_maputl.h"
 #include "p_mobj.h"
 #include "p_setup.h"
 #include "p_skin.h"
+#include "p_slopes.h"
 #include "p_spec.h"
 #include "p_xenemy.h"
 #include "polyobj.h"
@@ -91,26 +93,11 @@ static bool EV_Check3DMidTexSwitch(const line_t *line, const Mobj *thing, int si
     // haleyjd 05/02/06: ONLY on two-sided lines.
     if((line->flags & ML_3DMIDTEX) && line->backsector && sidedef && sidedef->midtexture)
     {
-        fixed_t opentop, openbottom, textop, texbot;
+        const linkoffset_t *link     = P_GetLinkOffset(thing->groupid, line->frontsector->groupid);
+        const v2fixed_t     thingpos = { thing->x + link->x, thing->y + link->y };
 
-        opentop = line->frontsector->srf.ceiling.height < line->backsector->srf.ceiling.height ?
-                      line->frontsector->srf.ceiling.height :
-                      line->backsector->srf.ceiling.height;
-
-        openbottom = line->frontsector->srf.floor.height > line->backsector->srf.floor.height ?
-                         line->frontsector->srf.floor.height :
-                         line->backsector->srf.floor.height;
-
-        if(line->flags & ML_DONTPEGBOTTOM)
-        {
-            texbot = sidedef->offset_base_y + sidedef->offset_mid_y + openbottom;
-            textop = texbot + textures[sidedef->midtexture]->heightfrac;
-        }
-        else
-        {
-            textop = opentop + sidedef->offset_base_y + sidedef->offset_mid_y;
-            texbot = textop - textures[sidedef->midtexture]->heightfrac;
-        }
+        fixed_t textop, texbot;
+        P_Get3DMidTexHeights(*line, *sidedef, *line->frontsector, *line->backsector, texbot, textop, &thingpos);
 
         if(thing->z > textop || thing->z + thing->height < texbot)
             return false;

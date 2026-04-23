@@ -2122,7 +2122,7 @@ static void R_1SidedLine(cmapcontext_t &cmapcontext, planecontext_t &planecontex
         else
             fmidtexmid = textop * seg.tscale_mid_y;
 
-        if(seg.toffset_mid_y > 0)
+        if(seg.tscale_mid_y > 0)
             fmidtexmid += seg.toffset_base_y + seg.toffset_mid_y;
         else
             fmidtexmid -= seg.toffset_base_y + seg.toffset_mid_y;
@@ -2646,7 +2646,9 @@ static void R_addLine(bspcontext_t &bspcontext, cmapcontext_t &cmapcontext, plan
 
     side = line->sidedef;
 
-    seg.toffset_base_x = M_FixedToFloat(side->offset_base_x) + line->offset;
+    seg.toffset_seg_x = line->offset; // line->offset previously part of toffset_base_x. Must be separate for scaling.
+
+    seg.toffset_base_x = M_FixedToFloat(side->offset_base_x);
     seg.toffset_base_y = M_FixedToFloat(side->offset_base_y);
 
     seg.toffset_top_x    = M_FixedToFloat(side->offset_top_x);
@@ -2663,9 +2665,12 @@ static void R_addLine(bspcontext_t &bspcontext, cmapcontext_t &cmapcontext, plan
     seg.tscale_bottom_x = M_FixedToFloat(side->scale_bottom_x);
     seg.tscale_bottom_y = M_FixedToFloat(side->scale_bottom_y);
 
-    seg.toffset_top_x    = R_getAdjustedXOffset(seg.toffset_top_x, seg.toffset_base_x, side->toptexture);
-    seg.toffset_mid_x    = R_getAdjustedXOffset(seg.toffset_mid_x, seg.toffset_base_x, side->midtexture);
-    seg.toffset_bottom_x = R_getAdjustedXOffset(seg.toffset_bottom_x, seg.toffset_base_x, side->bottomtexture);
+    seg.toffset_top_x =
+        R_getAdjustedXOffset(seg.toffset_top_x, seg.toffset_base_x + seg.toffset_seg_x, side->toptexture);
+    seg.toffset_mid_x =
+        R_getAdjustedXOffset(seg.toffset_mid_x, seg.toffset_base_x + seg.toffset_seg_x, side->midtexture);
+    seg.toffset_bottom_x =
+        R_getAdjustedXOffset(seg.toffset_bottom_x, seg.toffset_base_x + seg.toffset_seg_x, side->bottomtexture);
 
     seg.skew_top_step = seg.skew_mid_step = seg.skew_bottom_step = 0.0f;
     seg.skew_top_baseoffset = seg.skew_mid_baseoffset = seg.skew_bottom_baseoffset = 0.0f;
