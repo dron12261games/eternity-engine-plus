@@ -181,6 +181,7 @@ struct cb_view_t
     // haleyjd: view sector, because of interpolation
     // printz: only used for Boom-kind colormapping
     const sector_t *boomcolorsector;
+    v2fixed_t       boomcolorviewpoint;
 };
 
 // haleyjd 3/11/10: markflags
@@ -207,6 +208,8 @@ struct cb_seg_t
 {
     int   x1, x2;
     float x1frac, x2frac;
+
+    float toffset_seg_x;
 
     float toffset_base_x, toffset_base_y;
     float toffset_top_x, toffset_top_y;

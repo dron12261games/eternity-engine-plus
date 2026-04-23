@@ -41,6 +41,7 @@
 #include "p_portalcross.h"
 #include "p_portalclip.h"
 #include "p_setup.h"
+#include "p_slopes.h"
 #include "p_spec.h"
 #include "polyobj.h"
 #include "r_context.h"
@@ -589,6 +590,53 @@ lineopening_t P_SlopeOpeningPortalAware(v2fixed_t pos)
     return open;
 }
 
+void P_Get3DMidTexHeights(const line_t &line, const side_t &side, const sector_t &frontsector,
+                          const sector_t &backsector, fixed_t &texbot, fixed_t &textop, const v2fixed_t *point)
+{
+    Surfaces<pslope_t *> *const slopes = point ? P_Get3DMidTexSlopes(line) : nullptr;
+
+    // For the usual case we must use the editor-specified heights to get the unsloped 3dmidtex positions
+    const auto   &frontceiling = frontsector.srf.ceiling;
+    const auto   &backceiling  = backsector.srf.ceiling;
+    const fixed_t opentop      = frontceiling.height < backceiling.height ? frontceiling.height : backceiling.height;
+
+    const auto   &frontfloor = frontsector.srf.floor;
+    const auto   &backfloor  = backsector.srf.floor;
+    const fixed_t openbottom = frontfloor.height > backfloor.height ? frontfloor.height : backfloor.height;
+
+    if(!side.scale_mid_y || line.extflags & EX_ML_WRAPMIDTEX)
+    {
+        // Prevent division by zero scale: consider height infinite
+        // Or if wrapmidtex is set, also consider it infinite.
+        texbot = openbottom;
+        textop = opentop;
+        return;
+    }
+
+    const fixed_t offset = FixedDiv(side.offset_base_y + side.offset_mid_y, side.scale_mid_y);
+    const fixed_t height = FixedDiv(textures[side.midtexture]->heightfrac, side.scale_mid_y);
+    if(line.flags & ML_DONTPEGBOTTOM)
+    {
+        texbot = openbottom + offset;
+        textop = side.scale_mid_y >= 0 ? texbot + height : texbot - height;
+    }
+    else
+    {
+        textop = opentop + offset;
+        texbot = side.scale_mid_y >= 0 ? textop - height : textop + height;
+    }
+
+    if(slopes) // IMPORTANT: we update the slopes each time
+    {
+        slopes->floor->o.z    = textop;
+        slopes->floor->of.z   = M_FixedToFloat(textop);
+        slopes->ceiling->o.z  = texbot;
+        slopes->ceiling->of.z = M_FixedToFloat(texbot);
+        textop                = P_GetZAt(slopes->floor, point->x, point->y);
+        texbot                = P_GetZAt(slopes->ceiling, point->x, point->y);
+    }
+}
+
 //
 // P_LineOpening
 //
@@ -609,8 +657,6 @@ lineopening_t P_LineOpening(const line_t *linedef, const Mobj *mo, const v2fixed
 
     fixed_t frontceilz, frontfloorz, backceilz, backfloorz;
     int     frontfloorgroupid, backfloorgroupid;
-    // SoM: used for 3dmidtex
-    fixed_t frontcz, frontfz, backcz, backfz, otop, obot;
 
     if(linedef->sidenum[1] == -1) // single sided line
     {
@@ -663,9 +709,6 @@ lineopening_t P_LineOpening(const line_t *linedef, const Mobj *mo, const v2fixed
             frontceilz = frontceiling.getZAt(point);
             backceilz  = backceiling.getZAt(backpoint);
         }
-
-        frontcz = frontceiling.getZAt(point);
-        backcz  = backceiling.getZAt(backpoint);
     }
 
     const surface_t &frontfloor = openfrontsector->srf.floor;
@@ -699,9 +742,6 @@ lineopening_t P_LineOpening(const line_t *linedef, const Mobj *mo, const v2fixed
             backfloorz        = backfloor.getZAt(backpoint);
             backfloorgroupid  = openbacksector->groupid;
         }
-
-        frontfz = frontfloor.getZAt(point);
-        backfz  = backfloor.getZAt(backpoint);
     }
 
     if(linedef->extflags & EX_ML_UPPERPORTAL && backceiling.pflags & PS_PASSABLE)
@@ -751,16 +791,6 @@ lineopening_t P_LineOpening(const line_t *linedef, const Mobj *mo, const v2fixed
             open.floorpic = backfloor.pic;
     }
 
-    if(frontceiling.height < backceiling.height)
-        otop = frontceiling.height;
-    else
-        otop = backceiling.height;
-
-    if(frontfloor.height > backfloor.height)
-        obot = frontfloor.height;
-    else
-        obot = backfloor.height;
-
     open.sec = open.height;
 
     // SoM 9/02/02: Um... I know I told Quasar` I would do this after
@@ -773,16 +803,9 @@ lineopening_t P_LineOpening(const line_t *linedef, const Mobj *mo, const v2fixed
         fixed_t textop, texbot, texmid;
         side_t *side = &sides[linedef->sidenum[0]];
 
-        if(linedef->flags & ML_DONTPEGBOTTOM)
-        {
-            texbot = side->offset_base_y + side->offset_mid_y + obot;
-            textop = texbot + textures[side->midtexture]->heightfrac;
-        }
-        else
-        {
-            textop = otop + side->offset_base_y + side->offset_mid_y;
-            texbot = textop - textures[side->midtexture]->heightfrac;
-        }
+        const auto *midtexslopes = P_Get3DMidTexSlopes(*linedef);
+        P_Get3DMidTexHeights(*linedef, *side, *openfrontsector, *openbacksector, texbot, textop, &point);
+
         texmid = (textop + texbot) / 2;
 
         // SoM 9/7/02: use monster blocking line to provide better
@@ -800,7 +823,9 @@ lineopening_t P_LineOpening(const line_t *linedef, const Mobj *mo, const v2fixed
             if(texbot < open.height.ceiling)
             {
                 open.height.ceiling = texbot;
-                open.ceilsector     = nullptr; // not under a slope now
+                open.ceilsector     = nullptr;
+                if(midtexslopes)
+                    open.midtexslopes.ceiling = midtexslopes->ceiling;
             }
             // ioanch 20160318: mark if 3dmidtex affects clipping
             // Also don't flag lines that are offset into the floor/ceiling
@@ -813,7 +838,9 @@ lineopening_t P_LineOpening(const line_t *linedef, const Mobj *mo, const v2fixed
             {
                 open.height.floor  = textop;
                 open.bottomgroupid = linedef->frontsector->groupid;
-                open.floorsector   = nullptr; // not on a slope now
+                open.floorsector   = nullptr;
+                if(midtexslopes)
+                    open.midtexslopes.floor = midtexslopes->floor;
             }
             // ioanch 20160318: mark if 3dmidtex affects clipping
             // Also don't flag lines that are offset into the floor/ceiling
